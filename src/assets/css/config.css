@@ -1,0 +1,46 @@
+.config-view {
+    padding: 0 15px;
+}
+
+.el-tabs__content {
+    padding-top: 15px;
+}
+.config-view .is-https .el-input-group__prepend {
+    padding: 0 7px;
+}
+.config-view .is-https.https .el-input-group__prepend {
+    background-color: rgba(103,194,58,.1);
+    border-color: rgba(103,194,58,.2);
+    color: #67c23a;
+}
+.config-view .is-https.https input {
+    border-color: rgba(103,194,58,.2);
+}
+
+.config-view .conf-str {
+    font-style:italic;
+    margin-left: 10px;
+    color: #dcdfe6;
+}
+
+.config-view .input-add-proxy, .config-view .input-add-ignored-errno {
+    width: 120px;
+    *margin-left: 10px;
+    height: 24px;
+    vertical-align: top;
+}
+
+.config-view .el-tag + .el-tag {
+    margin-left: 5px;
+}
+
+.config-view .button-add-proxy, .config-view .button-add-ignored-errno {
+    *margin-left: 10px;
+    height: 24px;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.config-view .button-add-proxy span, .config-view .button-add-ignored-errno span  {
+    line-height: 12px!important;
+}
