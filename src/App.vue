@@ -181,28 +181,21 @@ export default {
     var _this = this
     this.refreshHeaderFunc = function () {
       _this.needRefreshHeader = Date.now()
-      setTimeout(_this.refreshHeaderFunc, _this.$store.state.conn.refresh_interval * 1000)
+      setTimeout(_this.refreshHeaderFunc, _this.$store.state.conn.refreshInterval * 1000)
     }
     this.refreshHeaderFunc()
 
     this.refreshFinishedFunc = function () {
       _this.needRefreshFinished = Date.now()
-      setTimeout(_this.refreshFinishedFunc, _this.$store.state.conn.refresh_interval * 1000)
+      setTimeout(_this.refreshFinishedFunc, _this.$store.state.conn.refreshInterval * 1000)
     }
     this.refreshFinishedFunc()
 
     this.refreshUnfinishedFunc = function () {
       _this.needRefreshUnfinished = Date.now()
-      setTimeout(_this.refreshUnfinishedFunc, _this.$store.state.conn.refresh_interval * 2000)
+      setTimeout(_this.refreshUnfinishedFunc, _this.$store.state.conn.refreshInterval * 2000)
     }
     this.refreshUnfinishedFunc()
-
-    // display connection configuration if first run
-    if (!this.$store.state.conn.host) {
-      this.configDialogVisible = true
-      this.$store.state.conn.host = location.hostname
-      this.$store.state.conn.port = 8010
-    }
   }
 }
 </script>

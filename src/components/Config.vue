@@ -218,6 +218,13 @@ export default {
     })
   },
   mounted () {
+    // display connection configuration if first run
+    if (!this.$store.state.conn.host) {
+      this.$emit('update:dialogVisible', true)
+      this.$store.state.conn.host = location.hostname
+      this.$store.state.conn.port = 8010
+      this.$store.state.conn.isHttps = location.protocol === 'https:'
+    }
     // initial values, will load from vuex.persist
     this.$emit('update:connStringNew', this.connString)
     this.$emit('update:authStringNew', this.authString)

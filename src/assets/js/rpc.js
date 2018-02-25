@@ -81,7 +81,7 @@ class JsonRPC {
   getSign (uri) {
     let secret = ''
     if (this.secret) {
-      secret = this.secret.match(/token:(.+)/)[0]
+      secret = this.secret.match(/token:(.+)/)[1] || ''
     }
     return md5(secret + '-xehentai-' + uri).substr(0, 8)
   }
