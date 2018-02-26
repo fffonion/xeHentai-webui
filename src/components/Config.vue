@@ -188,7 +188,7 @@
 </template>
 
 <script>
-import '../assets/css/config.css'
+import '../assets/css/config.scss'
 import {mapGetters} from 'vuex'
 
 export default {

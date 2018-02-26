@@ -3,40 +3,55 @@
     <el-dialog
       :visible.sync="dialogVisible"
       :before-close="handleDialogClose"
-      style="text-align: center;"
-      top="1vh"
-      width="80%">
+      top="0"
+      v-loading="loading"
+      element-loading-background="rgba(0, 0, 0, 0.4)"
+      :fullscreen="true">
+      <el-checkbox
+        style="display: inline-block"
+        v-model="doublePageMode">
+        {{ $t('Double Page') }}
+      </el-checkbox>
       <el-pagination
         :current-page.sync="idx"
         layout="prev, pager, next, jumper"
         :page-size="1"
         :total="images.length">
       </el-pagination>
-      <el-row v-loading="loading" width="80%">
-      <img
-        width="100%"
-        @load="loadFunc"
-        @error="errorFunc"
-        :src="this.rpc ? this.rpc.endpoint + images[idx - 1] : ''"
-        @click="idx+=1"/>
-      </el-row>
-      <el-pagination
+      <div class="image-wrapper">
+        <img
+          @load="loadFunc"
+          @error="errorFunc"
+          :src="rpc ? rpc.endpoint + images[idx - 1] : ''"
+          @click="handleImgClick"/>
+        <img
+          v-if="doublePageMode"
+          @load="loadFunc"
+          @error="errorFunc"
+          :src="rpc && idx < images.length ? rpc.endpoint + images[idx] : ''"
+          @click="handleImgClick"/>
+      </div>
+      <!-- <el-pagination
         :current-page.sync="idx"
         layout="prev, pager, next, jumper"
         :page-size="1"
         :total="images.length">
-      </el-pagination>
+      </el-pagination> -->
+      <div class="el-dialog__header"></div>
     </el-dialog>
   </div>
 </template>
 
 <script>
+import '../assets/css/gallery.scss'
+
 export default {
   data () {
     return {
       images: [],
       idx: 0,
-      loading: true
+      loading: 0,
+      doublePageMode: true
     }
   },
   props: ['dialogVisible', 'guid', 'rpc'],
@@ -57,7 +72,10 @@ export default {
       )
     },
     idx: function (val) {
-      this.loading = true
+      this.loading = this.doublePageMode ? 2 : 1
+    },
+    doublePageMode: function (val) {
+      this.loading = 0
     }
   },
   methods: {
@@ -70,10 +88,16 @@ export default {
     handleDialogClose () {
       this.$emit('update:dialogVisible', false)
     },
+    handleImgClick (e) {
+      this.idx = Math.min(this.idx + (this.doublePageMode ? 2 : 1), this.images.length)
+      // .el-dialog.is-fullscreen
+      e.path[3].scrollTop = 42
+    },
     loadFunc (e) {
-      this.loading = false
+      this.loading = Math.max(0, this.loading - 1)
     },
     errorFunc (e) {
+      this.loading = Math.max(0, this.loading - 1)
       /** e.srcElement.style.width = '64px'
       e.srcElement.style.opacity = '0.1'
       e.srcElement.src = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIHZpZXdCb3g9IjAgMCAxNzkyIDE3OTIiPjxwYXRoIGZpbGw9IiMwMDAiIGQ9Ik0xMDI0IDEzNzV2LTE5MHEwLTE0LTkuNS0yMy41dC0yMi41LTkuNWgtMTkycS0xMyAwLTIyLjUgOS41dC05LjUgMjMuNXYxOTBxMCAxNCA5LjUgMjMuNXQyMi41IDkuNWgxOTJxMTMgMCAyMi41LTkuNXQ5LjUtMjMuNXpNMTAyMiAxMDAxbDE4LTQ1OXEwLTEyLTEwLTE5LTEzLTExLTI0LTExaC0yMjBxLTExIDAtMjQgMTEtMTAgNy0xMCAyMWwxNyA0NTdxMCAxMCAxMCAxNi41dDI0IDYuNWgxODVxMTQgMCAyMy41LTYuNXQxMC41LTE2LjV6TTEwMDggNjdsNzY4IDE0MDhxMzUgNjMtMiAxMjYtMTcgMjktNDYuNSA0NnQtNjMuNSAxN2gtMTUzNnEtMzQgMC02My41LTE3dC00Ni41LTQ2cS0zNy02My0yLTEyNmw3NjgtMTQwOHExNy0zMSA0Ny00OXQ2NS0xOCA2NSAxOCA0NyA0OXoiIC8+PC9zdmc+' **/

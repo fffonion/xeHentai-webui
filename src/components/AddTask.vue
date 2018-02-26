@@ -100,7 +100,7 @@
 </template>
 
 <script>
-import '../assets/css/add-task.css'
+import '../assets/css/add-task.scss'
 
 export default {
   data () {

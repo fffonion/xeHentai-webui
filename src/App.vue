@@ -44,6 +44,8 @@ import DownloadList from '@/components/DownloadList'
 import Gallery from '@/components/Gallery'
 import JsonRPC from '@/assets/js/rpc.js'
 
+const MINIMUM_VERSION = '2.020'
+
 export default {
   name: 'App',
   components: {
@@ -70,7 +72,8 @@ export default {
       configDialogVisible: false,
       addTaskDialogVisible: false,
       galleryVisible: false,
-      galleryGuid: 0
+      galleryGuid: 0,
+      versionMessageShown: false
     }
   },
   watch: {
@@ -121,8 +124,14 @@ export default {
       this.rpcInstance.call(
         'getInfo',
         (r) => {
-          quiet || _this.$message.success(_this.$t('Successfully connected to xeHentai'))
           _this.headerInfo = r
+          if (!this.versionMessageShown && r && r.version && r.version < MINIMUM_VERSION) {
+            _this.$message.warning(_this.$t(
+              'This WebUI don\'t supports xeHentai earlier than {0}', [MINIMUM_VERSION]))
+            this.versionMessageShown = true
+          } else {
+            quiet || _this.$message.success(_this.$t('Successfully connected to xeHentai'))
+          }
         },
         (e) => {
           quiet || _this.$message.error(e.toString(_this.$t))

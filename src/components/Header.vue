@@ -83,7 +83,7 @@
 </template>
 
 <script>
-import '../assets/css/header.css'
+import '../assets/css/header.scss'
 export default {
   props: ['info', 'addTaskDialogVisible', 'configDialogVisible',
     'needRefreshHeader', 'needRefreshFinished', 'needRefreshUnfinished'

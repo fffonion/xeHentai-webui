@@ -2,6 +2,7 @@ export default {
   'Cancel': '取消',
   'Add': '添加',
   'Confirm': '確定',
+  'Configuration': '配置',
   'Task Configuration': '任務設置',
   'Add Task': '添加任務',
   'disconneted': '未連接',
@@ -12,6 +13,7 @@ export default {
   'Successfully connected to xeHentai': '已連接到xeHentai',
   'Task #{0}: {1}': '任務 #{0}: {1}',
   'EroHon': '好多本子',
+  'Progress': '進度',
   'RPC Error: {0}': 'RPC 請求失敗: {0}',
   'Network Error': '網絡錯誤',
   'Endpoint not set': '沒有配置連接',
@@ -44,5 +46,8 @@ export default {
   'Save tasks': '保存任務',
   '"{0}" is not a valid proxy string': '"{0}" 不是合法的代理格式',
   '"{0}" is not a valid error number': '"{0}" 不是合法的錯誤號',
-  'Successfully add task #{0}': '成功新建任務 #{0}'
+  'Successfully add task #{0}': '成功新建任務 #{0}',
+  'Single Page': '單頁模式',
+  'Double Page': '雙頁模式',
+  'This WebUI don\'t supports xeHentai earlier than {0}': '這個版本的Web界面可能不兼容{0}以前的xeHentai'
 }

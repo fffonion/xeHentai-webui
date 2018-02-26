@@ -1,0 +1,29 @@
+.add-task-view{
+    .conf-str {
+        font-style:italic;
+        margin-left: 10px;
+        color: #dcdfe6;
+    }
+
+    .input-add-proxy, .input-add-ignored-errno {
+        width: 120px;
+        *margin-left: 10px;
+        height: 24px;
+        vertical-align: top;
+    }
+
+    .el-tag + .el-tag {
+        margin-left: 5px;
+    }
+
+    .button-add-proxy, .button-add-ignored-errno {
+        *margin-left: 10px;
+        height: 24px;
+        padding-top: 0;
+        padding-bottom: 0;
+    }
+
+    .button-add-proxy span, .button-add-ignored-errno span  {
+        line-height: 12px!important;
+    }
+}

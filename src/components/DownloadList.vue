@@ -1,9 +1,7 @@
 <template>
   <el-table
     :data='tableData'
-    :row-key='getRowKeys'
-    style='width: auto; margin: 0 120px'
-    @row-click='handleRowClick'>
+    style='width: auto; margin: 0 120px'>
     <el-table-column
       type="selection"
       width="35">
@@ -11,8 +9,10 @@
     <el-table-column
       :label="$t('EroHon')"
       width='400'
-      :sortable='true'
       :show-overflow-tooltip='true'
+      :filters="allTags"
+      :filter-method="filterTag"
+      filter-placement="bottom-start"
       align='left'>
       <template slot-scope='scope'>
         <el-popover
@@ -38,7 +38,7 @@
                   @error="handleThumbFailed"
                   @load="handleThumbLoaded"
                   :data-thumb-id="scope.row.guid"
-                  :src="getImage(scope.row, 1) + '?' + (thumbNeedReload[scope.row.guid] || 0)"/>
+                  :src="getImage(scope.row, 1) + '?w=100&_=' + (thumbNeedReload[scope.row.guid] || 0)"/>
               </a>
             </el-col>
             <el-col :span="18">
@@ -62,6 +62,10 @@
     </el-table-column>
     <el-table-column
       width=200
+      :label="$t('Progress')"
+      :filters="allTags"
+      :filter-method="filterProgress"
+      filter-placement="bottom-start"
       align=left>
       <template slot-scope='scope'>
         <el-progress
@@ -99,10 +103,12 @@
           <el-button
             size='mini'
             v-if='!isTaskStatusFinished(scope.row.state)'
+            :disabled='isTaskStatusRunning(scope.row.state) || isTaskStatusFailed(scope.row.state)'
             @click='handleStart(scope.$index, scope.row)'><icon name='play'></icon></el-button>
           <el-button
             size='mini'
             v-if='!isTaskStatusFinished(scope.row.state)'
+            :disabled='!isTaskStatusRunning(scope.row.state)'
             @click='handlePause(scope.$index, scope.row)'><icon name='pause'></icon></el-button>
           <el-button
             size='mini'
@@ -126,7 +132,7 @@
 
 <script>
 import {mapGetters} from 'vuex'
-import '../assets/css/download-list.css'
+import '../assets/css/download-list.scss'
 
 const TASK_STATE_PAUSED = 0
 const TASK_STATE_WAITING = 1
@@ -142,10 +148,10 @@ const TASK_STATE_FAILED = -1
 export default {
   data () {
     return {
-      getRowKeys (row) {
-        return row.guid
-      },
-      expanded_rows: [],
+      // getRowKeys (row) {
+      //   return row.guid
+      // },
+      // expanded_rows: [],
       thumbNeedReload: {}
     }
   },
@@ -157,22 +163,36 @@ export default {
     }),
     tableData () {
       return this.unfinishedTasks.concat(this.finishedTasks)
+    },
+    allTags () {
+      var tags = []
+      var unique = {}
+      for (let task in this.tableData) {
+        task = this.tableData[task]
+        for (let tag in task.meta.tags) {
+          tag = task.meta.tags[tag]
+          if (unique[tag]) continue
+          unique[tag] = 1
+          tags.push({text: tag, value: tag})
+        }
+      }
+      return tags
     }
   },
   methods: {
-    handleRowClick (row, e, column) {
-      // if click on the buttons, we don't toggle expansion
-      for (let p of e.path) {
-        if (p.type === 'button') return
-      }
+    // handleRowClick (row, e, column) {
+    //   // if click on the buttons, we don't toggle expansion
+    //   for (let p of e.path) {
+    //     if (p.type === 'button') return
+    //   }
 
-      var idx = this.expanded_rows.indexOf(row.guid)
-      if (idx > -1) {
-        this.expanded_rows.splice(idx, 1)
-      } else {
-        this.expanded_rows.push(row.guid)
-      }
-    },
+    //   var idx = this.expanded_rows.indexOf(row.guid)
+    //   if (idx > -1) {
+    //     this.expanded_rows.splice(idx, 1)
+    //   } else {
+    //     this.expanded_rows.push(row.guid)
+    //   }
+    // },
     handleView (index, row) {
       this.$emit('update:galleryGuid', row.guid)
       this.$emit('update:galleryVisible', true)
@@ -217,10 +237,18 @@ export default {
     handlePopoverHide (row) {
       var id = row.guid
       if (this.thumbNeedReload[id]) {
-        // let's just make something change
+        // let's just make something change if thumb has failed
+        // so vue can request it again next time
         row.meta.title += ' '
         this.thumbNeedReload[id] += 1
       }
+    },
+    filterTag (value, row, column) {
+      console.log(row, value)
+      return row.meta.tags.indexOf(value) !== -1
+    },
+    filterProgress (value, row, column) {
+      console.log(row, value)
     },
     isTaskStatusFailed (val) {
       return val === TASK_STATE_FAILED
