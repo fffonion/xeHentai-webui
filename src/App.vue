@@ -47,6 +47,7 @@ import DownloadList from '@/components/DownloadList'
 import Gallery from '@/components/Gallery'
 import JsonRPC from '@/assets/js/rpc.js'
 
+const RPC_THRESHOLD = 100 // not sending requests within RPC_THRESHOLD ms
 const MINIMUM_VERSION = '2.020'
 
 export default {
@@ -80,15 +81,18 @@ export default {
     }
   },
   watch: {
-    needRefreshFinished: function (val) {
+    needRefreshFinished: function (val, old) {
+      if (val - old < RPC_THRESHOLD) return
       var _this = this
       this.listTasks('finished', (r) => { _this.finishedTasks = r })
     },
-    needRefreshUnfinished: function (val) {
+    needRefreshUnfinished: function (val, old) {
+      if (val - old < RPC_THRESHOLD) return
       var _this = this
       this.listTasks('!finished', (r) => { _this.unfinishedTasks = r })
     },
-    needRefreshHeader: function (val) {
+    needRefreshHeader: function (val, old) {
+      if (val - old < RPC_THRESHOLD) return
       // auto refresh
       this.getInfo(true)
     },
