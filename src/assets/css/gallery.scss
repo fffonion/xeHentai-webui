@@ -54,6 +54,10 @@
         *margin-top: 32px;
         margin: 0 3px;
     }
+
+    .image-wrapper img.is-single-page {
+        max-width: 80%;
+    }
     
     .el-pagination {
         display: inline-block;

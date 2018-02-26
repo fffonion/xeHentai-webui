@@ -26,6 +26,9 @@
         :finishedTasks="finishedTasks"
         :unfinishedTasks="unfinishedTasks"
         :rpc="rpcInstance"
+        :needRefreshHeader.sync="needRefreshHeader"
+        :needRefreshFinished.sync="needRefreshFinished"
+        :needRefreshUnfinished.sync="needRefreshUnfinished"
         :galleryVisible.sync="galleryVisible"
         :galleryGuid.sync="galleryGuid"/>
     </el-main>
@@ -166,22 +169,29 @@ export default {
     },
     addTask (val) {
       var _this = this
-      this.rpcInstance.call(
-        'addTask',
-        (r) => {
-          _this.$message.success(_this.$t('Successfully add task #{0}', [r]))
-        },
-        (e) => {
-          _this.$message.warning(e.toString(_this.$t))
-        },
-        [val[0]],
-        val[1]
-      )
+      for (let idx in val[0]) {
+        var url = val[0][idx]
+        this.rpcInstance.call(
+          'addTask',
+          (r) => {
+            _this.$message.success(_this.$t('Successfully add task #{0}', [r]))
+            _this.refreshHeaderFunc()
+            _this.refreshFinishedFunc()
+            _this.refreshUnfinishedFunc()
+          },
+          (e) => {
+            _this.$message.warning(e.toString(_this.$t))
+            _this.refreshUnfinishedFunc()
+          },
+          [url],
+          val[1]
+        )
+      }
     },
     reloadAll () {
-      this.$emit('update:needRefreshHeader', Date.now())
-      this.$emit('update:needRefreshFinished', Date.now())
-      this.$emit('update:needRefreshUnfinished', Date.now())
+      this.refreshHeaderFunc()
+      this.refreshFinishedFunc()
+      this.refreshUnfinishedFunc()
       this.getConfig()
     }
   },

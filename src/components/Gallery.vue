@@ -5,7 +5,7 @@
       :before-close="handleDialogClose"
       top="0"
       v-loading="loading"
-      element-loading-background="rgba(0, 0, 0, 0.4)"
+      element-loading-background="unset"
       :fullscreen="true">
       <el-checkbox
         style="display: inline-block"
@@ -23,6 +23,7 @@
           @load="loadFunc"
           @error="errorFunc"
           :src="rpc ? rpc.endpoint + images[idx - 1] : ''"
+          :class="doublePageMode ? '' : 'is-single-page'"
           @click="handleImgClick"/>
         <img
           v-if="doublePageMode"
@@ -89,7 +90,14 @@ export default {
       this.$emit('update:dialogVisible', false)
     },
     handleImgClick (e) {
-      this.idx = Math.min(this.idx + (this.doublePageMode ? 2 : 1), this.images.length)
+      let sign = 1
+      // click left part of screen to go back
+      if (e.screenX < e.view.screen.width / 2) sign = -1
+      if (this.idx > this.images.length - (this.doublePageMode ? 2 : 1) && sign > 0) {
+        this.$emit('update:dialogVisible', false)
+        return
+      }
+      this.idx = this.idx + sign * (this.doublePageMode ? 2 : 1)
       // .el-dialog.is-fullscreen
       e.path[3].scrollTop = 42
     },

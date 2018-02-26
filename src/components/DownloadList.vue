@@ -38,7 +38,7 @@
                   @error="handleThumbFailed"
                   @load="handleThumbLoaded"
                   :data-thumb-id="scope.row.guid"
-                  :src="getImage(scope.row, 1) + '?w=100&_=' + (thumbNeedReload[scope.row.guid] || 0)"/>
+                  :src="getImage(scope.row, 1) + '?w=300&_=' + (thumbNeedReload[scope.row.guid] || 0)"/>
               </a>
             </el-col>
             <el-col :span="18">
@@ -69,7 +69,7 @@
       align=left>
       <template slot-scope='scope'>
         <el-progress
-          :percentage='100 * scope.row.meta.finished / scope.row.meta.total'
+          :percentage='100 * scope.row.meta.finished / scope.row.meta.total || 0'
           :status='mapStatus(scope.row.state)'
           :show-text='true'>
         </el-progress>
@@ -155,7 +155,8 @@ export default {
       thumbNeedReload: {}
     }
   },
-  props: ['finishedTasks', 'unfinishedTasks', 'rpc', 'needRefreshFinished', 'needRefreshUnfinished'],
+  props: ['finishedTasks', 'unfinishedTasks', 'rpc',
+    'needRefreshHeader', 'needRefreshFinished', 'needRefreshUnfinished'],
   computed: {
     ...mapGetters({
       connString: 'connString',

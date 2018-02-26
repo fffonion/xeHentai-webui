@@ -46,6 +46,7 @@ class RPCError {
   }
 
   toString (t) {
+    console.log(t('RPC Error: {0}', [t(this.message)]))
     return t('RPC Error: {0}', [t(this.message)]) + (this.code === -1 ? '' : ' (' + this.code + ')')
   }
 }
@@ -70,7 +71,7 @@ class JsonRPC {
     ajaxPost(this.endpoint + this.uri, JSON.stringify(payload))
       .then(JSON.parse)
       .then((r) => {
-        if (r.error) reject(r.error)
+        if (r.error) reject(new RPCError(r.error.message, r.error.code))
         else resolve(r.result)
       })
       .catch((e) => {

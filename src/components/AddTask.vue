@@ -8,7 +8,12 @@
       width="45%">
       <el-form ref="form" label-width="100px" label-position="left">
         <el-form-item label="URL" style="text-align: center">
-          <el-input v-model="url"></el-input>
+          <el-input
+          v-model="url"
+          type="textarea"
+          :placeholder="$t('To add multiple tasks, input one line per URL')"
+          autosize>
+          </el-input>
         </el-form-item>
         <el-collapse accordion>
           <el-collapse-item :title="$t('Basic Configuration')" name="basic">
@@ -120,14 +125,12 @@ export default {
   },
   methods: {
     handleCancel () {
-      this.form = {
-        url: '',
-        config: {}
-      }
+      this.url = ''
+      this.serverConfig = Object.assign({}, this.config)
       this.$emit('update:dialogVisible', false)
     },
     handleConfirm () {
-      this.$emit('update:newTask', [this.url, this.serverConfig])
+      this.$emit('update:newTask', [this.url.match(/[^\r\n]+/g), this.serverConfig])
       this.handleCancel()
     },
     handleDialogClose () {

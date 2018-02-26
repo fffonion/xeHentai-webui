@@ -49,5 +49,6 @@ export default {
   'Successfully add task #{0}': '成功新建任務 #{0}',
   'Single Page': '單頁模式',
   'Double Page': '雙頁模式',
-  'This WebUI don\'t supports xeHentai earlier than {0}': '這個版本的Web界面可能不兼容{0}以前的xeHentai'
+  'This WebUI don\'t supports xeHentai earlier than {0}': '這個版本的Web界面可能不兼容{0}以前的xeHentai',
+  'To add multiple tasks, input one line per URL': '如需添加多個任務，可以每行填寫一條URL'
 }
