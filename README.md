@@ -1,6 +1,12 @@
 # xeHentai-webui
 
-> xeHentai Web Interface
+[简体中文](README.chs.md) [繁體中文](README.cht.md)
+
+This is a web interface for [xeHentai](https://github.com/fffonion/xeHentai)
+
+[Demo](https://xehentai.yooooo.us/)
+
+*Please set your server endpoint to your local xeHentai when visiting the demo for the first time. For exmaple, enter **localhost:8010** and turn off HTTPS for default config.*
 
 ## Build Setup
 
