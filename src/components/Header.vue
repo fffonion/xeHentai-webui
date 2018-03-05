@@ -61,7 +61,23 @@
             round
             @click='handleDelete(scope.$index, scope.row)'><icon name="trash"></icon></el-button>
         </el-button-group> -->
-        <el-col :span="6" :offset="4">
+         <el-col :span="4">
+          <el-button-group v-show="bulkSelected">
+            <el-button
+              size='mini'
+              round
+              @click="$emit('update:bulkAction', 'resume')"><icon name="play"></icon></el-button>
+            <el-button
+              size='mini'
+              round
+              @click="$emit('update:bulkAction', 'pause')"><icon name="pause"></icon></el-button>
+            <el-button
+              size='mini'
+              round
+              @click="$emit('update:bulkAction', 'del')"><icon name="trash"></icon></el-button>
+          </el-button-group>
+        </el-col>
+        <el-col :span="4">
         <el-button-group>
           <el-button
             size='mini'
@@ -85,7 +101,7 @@
 <script>
 import '../assets/css/header.scss'
 export default {
-  props: ['info', 'addTaskDialogVisible', 'configDialogVisible',
+  props: ['info', 'addTaskDialogVisible', 'configDialogVisible', 'bulkSelected',
     'needRefreshHeader', 'needRefreshFinished', 'needRefreshUnfinished'
   ],
   methods: {

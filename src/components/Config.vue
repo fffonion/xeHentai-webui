@@ -176,6 +176,10 @@
               <el-switch v-model="serverConfig.save_tasks"></el-switch>
               <span class='conf-str'>save_tasks</span>
             </el-form-item>
+            <el-form-item :label="$t('Delete files')">
+              <el-switch v-model="serverConfig.delete_task_files"></el-switch>
+              <span class='conf-str'>delete_task_files</span>
+            </el-form-item>
           </el-form>
         </el-tab-pane>
       </el-tabs>

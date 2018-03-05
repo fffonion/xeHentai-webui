@@ -47,10 +47,9 @@ Vue.config.productionTip = false
 
 function getLocale () {
   var lang = navigator.language || navigator.browserLanguage
-  if (lang === 'zh-CN' || lang === 'zh-SG') return 'zh-Hans'
+  if (lang === 'zh' || lang === 'zh-CN') return 'zh-Hans'
   if (lang === 'zh-TW' || lang === 'zh-HK') return 'zh-Hant'
-  // return 'en-US'
-  return 'zh-Hans'
+  return 'en-US'
 }
 const messages = {
   'en-US': enUs,

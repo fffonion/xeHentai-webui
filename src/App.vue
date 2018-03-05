@@ -4,6 +4,8 @@
       :info="headerInfo"
       :addTaskDialogVisible.sync="addTaskDialogVisible"
       :configDialogVisible.sync="configDialogVisible"
+      :bulkSelected="bulkSelected"
+      :bulkAction.sync="bulkAction"
       :needRefreshHeader.sync="needRefreshHeader"
       :needRefreshFinished.sync="needRefreshFinished"
       :needRefreshUnfinished.sync="needRefreshUnfinished"/>
@@ -23,12 +25,14 @@
         :dialogVisible.sync="addTaskDialogVisible"/>
 
       <download-list-view
-        :finishedTasks="finishedTasks"
-        :unfinishedTasks="unfinishedTasks"
+        :allTasks="allTasks"
         :rpc="rpcInstance"
         :needRefreshHeader.sync="needRefreshHeader"
         :needRefreshFinished.sync="needRefreshFinished"
         :needRefreshUnfinished.sync="needRefreshUnfinished"
+        :needDeleteGuid.sync="needDeleteGuid"
+        :bulkSelected.sync="bulkSelected"
+        :bulkAction.sync="bulkAction"
         :galleryVisible.sync="galleryVisible"
         :galleryGuid.sync="galleryGuid"/>
     </el-main>
@@ -62,14 +66,17 @@ export default {
   data () {
     return {
       headerInfo: {},
-      finishedTasks: [],
-      unfinishedTasks: [],
+      // finishedTasks: [],
+      // unfinishedTasks: [],
+      allTasks: [],
+      allTasksKeys: {},
       serverConfigLocal: {}, // the local copy of serverConfig
       serverConfig: {}, // the serverConfig pulled from server
       newTask: {},
       needRefreshHeader: 0,
       needRefreshFinished: 0,
       needRefreshUnfinished: 0,
+      needDeleteGuid: null, // trigger when deleting a task
       connString: null,
       authString: null,
       rpcInstance: null,
@@ -77,6 +84,8 @@ export default {
       addTaskDialogVisible: false,
       galleryVisible: false,
       galleryGuid: 0,
+      bulkSelected: false,
+      bulkAction: 0, // the bulk action that sent from Header to DownloadList
       versionMessageShown: false
     }
   },
@@ -84,17 +93,25 @@ export default {
     needRefreshFinished: function (val, old) {
       if (val - old < RPC_THRESHOLD) return
       var _this = this
-      this.listTasks('finished', (r) => { _this.finishedTasks = r })
+      this.listTasks('finished', (r) => { _this.updateTasks(r) })
     },
     needRefreshUnfinished: function (val, old) {
       if (val - old < RPC_THRESHOLD) return
       var _this = this
-      this.listTasks('!finished', (r) => { _this.unfinishedTasks = r })
+      this.listTasks('!finished', (r) => { _this.updateTasks(r, true) })
     },
     needRefreshHeader: function (val, old) {
       if (val - old < RPC_THRESHOLD) return
       // auto refresh
       this.getInfo(true)
+    },
+    needDeleteGuid: function (val) {
+      if (val && this.allTasksKeys[val] !== undefined) {
+        var idx = this.allTasksKeys[val]
+        this.allTasks.pop(idx)
+        // console.log('poped')
+        delete this.allTasksKeys[val]
+      }
     },
     connString: function (val) {
       this.rpcInstance = new JsonRPC(val, this.authString)
@@ -180,7 +197,7 @@ export default {
           (r) => {
             _this.$message.success(_this.$t('Successfully add task #{0}', [r]))
             _this.refreshHeaderFunc()
-            _this.refreshFinishedFunc()
+            // _this.refreshFinishedFunc()
             _this.refreshUnfinishedFunc()
           },
           (e) => {
@@ -197,6 +214,26 @@ export default {
       this.refreshFinishedFunc()
       this.refreshUnfinishedFunc()
       this.getConfig()
+    },
+    updateTasks (tasks, forceReplace) {
+      // console.log('enter')
+      for (let task of tasks) {
+        // console.log(this.allTasksKeys[task.guid], task.guid)
+        if (this.allTasksKeys[task.guid] !== undefined) {
+          var idx = this.allTasksKeys[task.guid]
+          // we should check if the task state has changed
+          if (!forceReplace && this.allTasks[idx].state === task.state) continue
+          // if (idx === -1) continue
+          // console.log('update exists', task.guid, this.allTasks[idx] === task)
+          // this.allTasks.pop(idx)
+          this.$set(this.allTasks, idx, task)
+        } else {
+          // console.log('push')
+          this.allTasks.push(task)
+          this.allTasksKeys[task.guid] = this.allTasks.length - 1
+        }
+      }
+      // console.log('exit')
     }
   },
   mounted () {

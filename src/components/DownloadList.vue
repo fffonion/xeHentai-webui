@@ -1,6 +1,9 @@
 <template>
   <el-table
-    :data='tableData'
+    ref="downloadlist"
+    :data='allTasks'
+    :default-sort="{prop: 'progress', order: 'descending'}"
+    @selection-change="handleSelectionChange"
     style='width: auto; margin: 0 120px'>
     <el-table-column
       type="selection"
@@ -13,6 +16,9 @@
       :filters="allTags"
       :filter-method="filterTag"
       filter-placement="bottom-start"
+      sortable
+      :sort-method="handleSortTitle"
+      prop='title'
       align='left'>
       <template slot-scope='scope'>
         <el-popover
@@ -63,9 +69,16 @@
     <el-table-column
       width=200
       :label="$t('Progress')"
-      :filters="allTags"
+      :filters="[{'text': $t('Finished'), 'value': 'success'},
+                {'text': $t('Running'), 'value': 'running'},
+                {'text': $t('Paused'), 'value': 'paused'},
+                {'text': $t('Failed'), 'value': 'exception'}
+      ]"
       :filter-method="filterProgress"
       filter-placement="bottom-start"
+      sortable
+      :sort-method="handleSortProgress"
+      prop='progress'
       align=left>
       <template slot-scope='scope'>
         <el-progress
@@ -152,24 +165,25 @@ export default {
       //   return row.guid
       // },
       // expanded_rows: [],
-      thumbNeedReload: {}
+      thumbNeedReload: {},
+      selectedRows: []
     }
   },
-  props: ['finishedTasks', 'unfinishedTasks', 'rpc',
-    'needRefreshHeader', 'needRefreshFinished', 'needRefreshUnfinished'],
+  props: ['finishedTasks', 'unfinishedTasks', 'allTasks', 'rpc', 'bulkAction', 'bulkSelected',
+    'needRefreshHeader', 'needRefreshFinished', 'needRefreshUnfinished', 'needDeleteGuid'],
   computed: {
     ...mapGetters({
       connString: 'connString',
       authString: 'authString'
     }),
-    tableData () {
+    /** tableData () {
       return this.unfinishedTasks.concat(this.finishedTasks)
-    },
+    },**/
     allTags () {
       var tags = []
       var unique = {}
-      for (let task in this.tableData) {
-        task = this.tableData[task]
+      for (let task in this.allTasks) {
+        task = this.allTasks[task]
         for (let tag in task.meta.tags) {
           tag = task.meta.tags[tag]
           if (unique[tag]) continue
@@ -178,6 +192,15 @@ export default {
         }
       }
       return tags
+    }
+  },
+  watch: {
+    bulkAction: function (val) {
+      if (val && val !== 'resume' && val !== 'pause' && val !== 'del') return
+      for (let guid of this.selectedRows) {
+        this._taskCmd(guid, val)
+      }
+      this.$emit('update:bulkAction', null)
     }
   },
   methods: {
@@ -199,37 +222,43 @@ export default {
       this.$emit('update:galleryVisible', true)
     },
     handleDownload (index, row) { },
-    _taskCmd (row, action) {
+    _taskCmd (guid, action, cb) {
       var _this = this
       this.rpc.call(
         action + 'Task',
-        (e) => {
-          console.log('ok', _this)
+        (r) => {
+          console.log('ok', _this, _this.$emit)
           _this.$emit('update:needRefreshHeader', Date.now())
           _this.$emit('update:needRefreshFinished', Date.now())
           _this.$emit('update:needRefreshUnfinished', Date.now())
+          cb && cb(r)
         },
         (e) => {
-          _this.$message.error(_this.$t('Task #{0}: {1}', [row.guid, e.message]))
+          console.log(guid, e.message)
+          _this.$message.error(_this.$t('Task #{0} {1} failed: {2}', [guid, action, e.message]))
         },
-        [row.guid]
+        [guid]
       )
     },
     handleStart (index, row) {
-      this._taskCmd(row, 'resume')
+      this._taskCmd(row.guid, 'resume')
     },
     handlePause (index, row) {
-      this._taskCmd(row, 'pause')
+      this._taskCmd(row.guid, 'pause')
     },
     handleDelete (index, row) {
-      this._taskCmd(row, 'del')
+      var _this = this
+      this._taskCmd(row.guid, 'del', () => {
+        _this.$emit('update:needDeleteGuid', row.guid)
+      })
     },
     handleThumbFailed (e) {
+      if (!e.srcElement) return
       var id = e.srcElement.getAttribute('data-thumb-id')
       if (!this.thumbNeedReload[id]) {
         this.thumbNeedReload[id] = 1
       }
-      setTimeout(() => { e.srcElement.src = '' }, 0)
+      setTimeout(() => { if (e.srcElement) e.srcElement.src = '' }, 0)
     },
     handleThumbLoaded (e) {
       var id = e.srcElement.getAttribute('data-thumb-id')
@@ -244,12 +273,24 @@ export default {
         this.thumbNeedReload[id] += 1
       }
     },
+    handleSelectionChange (selection) {
+      this.selectedRows = []
+      for (let row of selection) {
+        this.selectedRows.push(row.guid)
+      }
+      this.$emit('update:bulkSelected', selection.length !== 0)
+    },
+    handleSortTitle (a, b) {
+      return a.title > b.title ? 1 : -1
+    },
+    handleSortProgress (a, b) {
+      return a.state - b.state
+    },
     filterTag (value, row, column) {
-      console.log(row, value)
-      return row.meta.tags.indexOf(value) !== -1
+      return row.meta.tags && row.meta.tags.indexOf(value) !== -1
     },
     filterProgress (value, row, column) {
-      console.log(row, value)
+      return this.mapStatus(row.state) === value
     },
     isTaskStatusFailed (val) {
       return val === TASK_STATE_FAILED
