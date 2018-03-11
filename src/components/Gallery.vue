@@ -6,6 +6,7 @@
       top="0"
       v-loading="loading"
       element-loading-background="unset"
+      :close-on-click-modal="false"
       :fullscreen="true">
       <el-checkbox
         style="display: inline-block"

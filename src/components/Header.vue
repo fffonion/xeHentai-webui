@@ -3,7 +3,7 @@
     <el-header>
       <el-row type="flex" justify="space-between" align="middle">
         <el-col :span="14">
-          <span class="header">xeHentai WebUI</span>
+          <span class="header">{{ $t('xeHentai WebUI') }}</span>
           <el-tag type="info" size="mini">
             {{ info.version !== undefined ? info.version : $t('disconneted')}}
           </el-tag>
@@ -12,7 +12,7 @@
             width="320"
             trigger="hover">
             <el-row class="running-stat-popover">
-              <el-col :span="2"><icon name="spinner"/></el-col>
+              <el-col :span="2"><icon :spin="info.threads_running ? true : false" name="spinner"/></el-col>
               <el-col :span="8">{{ $t('Running threads') }}:</el-col>
               <el-col :span="1">{{ info.threads_running }}</el-col>
               <el-col :span="2" :offset="1"><icon name="hourglass"/></el-col>
@@ -36,7 +36,9 @@
             :type="info.threads_zombie ? 'warning' : (info.threads_running ? 'success' : 'info')"
             v-show="info.threads_running !== undefined"
             v-popover:running-stat-popover>
-            <icon name="spinner"/>
+            <icon
+            :spin="info.threads_running ? true : false"
+            name="spinner"/>
             {{ info.threads_running }}
             <icon name="hourglass"/>
             {{ info.threads_zombie }}

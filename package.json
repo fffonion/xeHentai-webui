@@ -21,6 +21,7 @@
   "dependencies": {
     "element-ui": "^2.0.11",
     "js-md5": "^0.7.3",
+    "npm": "^5.7.1",
     "vue": "^2.5.2",
     "vue-awesome": "^2.3.4",
     "vue-i18n": "^7.4.2",

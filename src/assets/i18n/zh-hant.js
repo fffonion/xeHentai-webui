@@ -1,4 +1,5 @@
 export default {
+  'xeHentai WebUI': '紳士WebUI',
   'Cancel': '取消',
   'Add': '添加',
   'Confirm': '確定',
