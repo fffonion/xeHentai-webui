@@ -196,7 +196,7 @@ export default {
   },
   watch: {
     bulkAction: function (val) {
-      if (val && val !== 'resume' && val !== 'pause' && val !== 'del') return
+      if (!val || (val !== 'resume' && val !== 'pause' && val !== 'del')) return
       for (let guid of this.selectedRows) {
         this._taskCmd(guid, val)
       }
