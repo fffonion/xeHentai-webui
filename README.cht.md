@@ -23,3 +23,7 @@ npm run build
 # 構建生產版本並顯示bundle分析報告
 npm run build --report
 ```
+
+## 投票新功能
+
+[![Feature Requests](http://feathub.com/fffonion/xeHentai-webui?format=svg)](http://feathub.com/fffonion/xeHentai-webui)
