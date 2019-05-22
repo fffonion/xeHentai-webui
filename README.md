@@ -1,5 +1,6 @@
 # xeHentai-webui
 
+
 [简体中文](README.chs.md) [繁體中文](README.cht.md)
 
 This is a web interface for [xeHentai](https://github.com/fffonion/xeHentai)
@@ -25,3 +26,7 @@ npm run build --report
 ```
 
 For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
+
+## Request a feature
+
+[![Feature Requests](http://feathub.com/fffonion/xeHentai-webui?format=svg)](http://feathub.com/fffonion/xeHentai-webui)
