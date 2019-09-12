@@ -108,9 +108,12 @@ export default {
     needDeleteGuid: function (val) {
       if (val && this.allTasksKeys[val] !== undefined) {
         var idx = this.allTasksKeys[val]
-        this.allTasks.pop(idx)
-        // console.log('poped')
+        this.$delete(this.allTasks, idx)
         delete this.allTasksKeys[val]
+        // shrink index by 1
+        for (var i = idx; i < this.allTasks.length; i++) {
+          this.allTasksKeys[this.allTasks[i].guid]--
+        }
       }
     },
     connString: function (val) {
@@ -216,6 +219,8 @@ export default {
       this.getConfig()
     },
     updateTasks (tasks, forceReplace) {
+      // updateTasks update value in tasks in place
+      // it doesn't handle removal
       // console.log('enter')
       for (let task of tasks) {
         // console.log(this.allTasksKeys[task.guid], task.guid)

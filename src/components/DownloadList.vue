@@ -197,8 +197,12 @@ export default {
   watch: {
     bulkAction: function (val) {
       if (!val || (val !== 'resume' && val !== 'pause' && val !== 'del')) return
+      var _this = this
       for (let guid of this.selectedRows) {
-        this._taskCmd(guid, val)
+        this._taskCmd(guid, val, () => {
+          _this.$emit('update:needRefreshHeader', Date.now())
+          _this.$emit('update:needRefreshUnfinished', Date.now())
+        })
       }
       this.$emit('update:bulkAction', null)
     }
@@ -227,10 +231,6 @@ export default {
       this.rpc.call(
         action + 'Task',
         (r) => {
-          console.log('ok', _this, _this.$emit)
-          _this.$emit('update:needRefreshHeader', Date.now())
-          _this.$emit('update:needRefreshFinished', Date.now())
-          _this.$emit('update:needRefreshUnfinished', Date.now())
           cb && cb(r)
         },
         (e) => {
@@ -241,10 +241,18 @@ export default {
       )
     },
     handleStart (index, row) {
-      this._taskCmd(row.guid, 'resume')
+      var _this = this
+      this._taskCmd(row.guid, 'resume', () => {
+        _this.$emit('update:needRefreshHeader', Date.now())
+        _this.$emit('update:needRefreshUnfinished', Date.now())
+      })
     },
     handlePause (index, row) {
-      this._taskCmd(row.guid, 'pause')
+      var _this = this
+      this._taskCmd(row.guid, 'pause', () => {
+        _this.$emit('update:needRefreshHeader', Date.now())
+        _this.$emit('update:needRefreshUnfinished', Date.now())
+      })
     },
     handleDelete (index, row) {
       var _this = this
