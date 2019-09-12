@@ -203,7 +203,11 @@ export default {
       newProxy: '',
       addIgnoredErrnoInputVisible: false,
       newIgnoredErrno: '',
-      connConfig: {},
+      connConfig: {
+        isHttps: false,
+        host: 'localhost',
+        port: 8010
+      },
       serverConfig: {}
     }
   },
