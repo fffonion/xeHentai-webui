@@ -1,7 +1,10 @@
 <template>
   <el-table
     ref="downloadlist"
-    :data='allTasks'
+    :data='allTasks.filter(row => !searchKeywords ||
+      (row.meta.gnname && row.meta.gnname.toLowerCase().includes(searchKeywords.toLowerCase())) ||
+      (row.meta.gjname && row.meta.gjname.toLowerCase().includes(searchKeywords.toLowerCase()))
+      )'
     :default-sort="{prop: 'progress', order: 'descending'}"
     @selection-change="handleSelectionChange"
     style='width: auto; margin: 0 120px'>
@@ -111,6 +114,15 @@
     </el-table-column>
     <el-table-column
       align=left>
+      <template slot='header'>
+        <el-autocomplete
+          class="searchbox"
+          v-model="searchKeywords"
+          size="small"
+          :fetch-suggestions="listTitles"
+          :trigger-on-focus="false"
+          :placeholder="$t('Type to search')"/>
+      </template>
       <template slot-scope='scope'>
         <el-button-group>
           <el-button
@@ -166,7 +178,8 @@ export default {
       // },
       // expanded_rows: [],
       thumbNeedReload: {},
-      selectedRows: []
+      selectedRows: [],
+      searchKeywords: '',
     }
   },
   props: ['finishedTasks', 'unfinishedTasks', 'allTasks', 'rpc', 'bulkAction', 'bulkSelected',
@@ -335,6 +348,27 @@ export default {
     getArchive (guid, title) {
       var uri = guid + '/' + title + '.zip'
       return this.connString + '/zip/' + this.rpc.getSign(guid) + '/' + uri
+    },
+    listTitles (input, cb) {
+      var names = []
+      var seen = {}
+      for (let task of this.allTasks) {
+        for (let key of ['gjname', 'gnname']) {
+          if (task.meta[key] !== undefined && !seen[task.meta[key]]) {
+            names.push({ 'value': task.meta[key] })
+            seen[task.meta[key]] = true
+          }
+        }
+      }
+      var filter = function (p) {
+        return (t) => {
+          return t.value.toLowerCase().includes(p)
+        }
+      }
+      var results = input ? names.filter(filter(input.toLowerCase())) : names
+      console.log(input, names, results)
+      // call callback function to return suggestions
+      cb(results)
     }
   }
 }

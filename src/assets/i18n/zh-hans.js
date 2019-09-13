@@ -56,5 +56,6 @@ export default {
   'Single Page': '单页模式',
   'Double Page': '双页模式',
   'This WebUI don\'t supports xeHentai earlier than {0}': '这个版本的Web界面可能不兼容{0}以前的xeHentai',
-  'To add multiple tasks, input one line per URL': '如需添加多个任务，可以每行填写一条URL'
+  'To add multiple tasks, input one line per URL': '如需添加多个任务，可以每行填写一条URL',
+  'Type to search': '搜索本子'
 }

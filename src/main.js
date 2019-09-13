@@ -45,6 +45,8 @@ Vue.component('icon', Icon)
 
 Vue.config.productionTip = false
 
+Vue.config.performance = true
+
 function getLocale () {
   var lang = navigator.language || navigator.browserLanguage
   if (lang === 'zh' || lang === 'zh-CN') return 'zh-Hans'
