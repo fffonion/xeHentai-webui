@@ -1,28 +1,31 @@
 .el-header {
-    margin: 0 120px;
-}
+  margin: 0 120px;
 
-.el-header span.header {
+  span.header {
     vertical-align: sub;
     margin-left: 15px;
     font-size: 2.5em;
     font-weight: 500;
-}
+  }
 
-.el-header .el-tag {
+  .el-tag {
     font-size: 0.7em;
+  }
 }
-header .fa-icon {
+
+header {
+  .fa-icon {
     height: 1em;
-}
+  }
 
-.running-stat-popover .fa-icon {
-    height: 0.8em;
-}
-
-header .el-button-group button .fa-icon {
+  .el-button-group button .fa-icon {
     width: auto;
     height: 1.5em;
     max-width: 100%;
     max-height: 100%;
+  }
+}
+
+.running-stat-popover .fa-icon {
+  height: 0.8em;
 }

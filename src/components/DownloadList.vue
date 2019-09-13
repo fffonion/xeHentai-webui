@@ -179,7 +179,7 @@ export default {
       // expanded_rows: [],
       thumbNeedReload: {},
       selectedRows: [],
-      searchKeywords: '',
+      searchKeywords: ''
     }
   },
   props: ['finishedTasks', 'unfinishedTasks', 'allTasks', 'rpc', 'bulkAction', 'bulkSelected',
@@ -366,7 +366,7 @@ export default {
         }
       }
       var results = input ? names.filter(filter(input.toLowerCase())) : names
-      console.log(input, names, results)
+      // console.log(input, names, results)
       // call callback function to return suggestions
       cb(results)
     }
