@@ -322,6 +322,9 @@ export default {
     isTaskStatusRunning (val) {
       return TASK_STATE_WAITING <= val && val < TASK_STATE_FINISHED
     },
+    isTaskStatusWaiting (val) {
+      return val === TASK_STATE_WAITING
+    },
     isTaskStatusViewable (val) {
       return val >= TASK_STATE_DOWNLOAD
     },
@@ -332,6 +335,8 @@ export default {
       if (this.isTaskStatusFailed(val)) {
         return 'exception'
       } else if (this.isTaskStatusPaused(val)) {
+        return 'paused'
+      } else if (this.isTaskStatusWaiting(val)) {
         return 'paused'
       } else if (this.isTaskStatusRunning(val)) {
         return 'running'
