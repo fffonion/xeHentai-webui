@@ -1,10 +1,7 @@
 <template>
   <el-table
     ref="downloadlist"
-    :data='allTasks.filter(row => !searchKeywords ||
-      (row.meta.gnname && row.meta.gnname.toLowerCase().includes(searchKeywords.toLowerCase())) ||
-      (row.meta.gjname && row.meta.gjname.toLowerCase().includes(searchKeywords.toLowerCase()))
-      )'
+    :data='allTasksFiltered'
     :default-sort="{prop: 'progress', order: 'descending'}"
     @selection-change="handleSelectionChange"
     style='width: auto; margin: 0 120px'>
@@ -205,6 +202,14 @@ export default {
         }
       }
       return tags
+    },
+    allTasksFiltered () {
+      var keywords = this.searchKeywords && this.searchKeywords.toLowerCase()
+      return this.allTasks.filter(row => !keywords ||
+        (row.meta.gnname && row.meta.gnname.toLowerCase().includes(keywords)) ||
+        (row.meta.gjname && row.meta.gjname.toLowerCase().includes(keywords)) ||
+        (row.meta.tags && row.meta.tags.join('#').includes(keywords))
+      )
     }
   },
   watch: {
@@ -365,6 +370,8 @@ export default {
           }
         }
       }
+      names = names.concat(this.allTags)
+
       var filter = function (p) {
         return (t) => {
           return t.value.toLowerCase().includes(p)
