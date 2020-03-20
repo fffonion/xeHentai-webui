@@ -41,7 +41,7 @@ var options = {
         maxTicksLimit: 5,
         beginAtZero: true,
         callback: function (value, index, values) {
-          return util.humanSpeed(value, 0)
+          return util.humanSpeed(value, 1)
         }
       },
       gridLines: {
