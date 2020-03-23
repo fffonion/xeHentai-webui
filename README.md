@@ -1,13 +1,13 @@
 # xeHentai-webui
 
-
 [简体中文](README.chs.md) [繁體中文](README.cht.md)
 
 This is a web interface for [xeHentai](https://github.com/fffonion/xeHentai)
 
-[Demo](https://xehentai.yooooo.us/)
+[Demo](https://xehentai.yooooo.us/#host=localhost,port=8010,token=,https=no)
 
-*Please set your server endpoint to your local xeHentai when visiting the demo for the first time. For exmaple, enter **localhost:8010** and turn off HTTPS for default config.*
+Please start [xeHentai](https://github.com/fffonion/xeHentai) in RPC mode first by adding `--rpc-port=8010`
+to arguments.
 
 ## Build Setup
 

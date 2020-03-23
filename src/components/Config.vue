@@ -231,6 +231,22 @@ export default {
       this.$store.state.conn.port = 8010
       this.$store.state.conn.isHttps = location.protocol === 'https:'
     }
+    // if we have forced config, use it
+    var url = location.href
+    if (url.indexOf('#') !== -1) {
+      url = url.substring(url.indexOf('#') + 1)
+      var confs = {}
+      url = url.split(',')
+      for (var kv of url) {
+        kv = kv.split('=')
+        confs[kv[0].trim()] = kv[1].trim()
+      }
+      this.$store.state.conn.host = confs.host
+      this.$store.state.conn.port = parseInt(confs.port)
+      this.$store.state.conn.isHttps = confs.https === 'yes'
+      this.$store.state.conn.secret = confs.token
+    }
+
     // initial values, will load from vuex.persist
     this.$emit('update:connStringNew', this.connString)
     this.$emit('update:authStringNew', this.authString)

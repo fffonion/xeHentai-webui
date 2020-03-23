@@ -4,9 +4,11 @@
 
 這是一個 [xeHentai](https://github.com/fffonion/xeHentai) 的web界面
 
-[演示](https://xehentai.yooooo.us/)
+[演示](https://xehentai.yooooo.us/#host=localhost,port=8010,token=,https=no)
 
-*第一次打開演示時，請設置伺服器信息. 比如對xeHentai默認設置，輸入**localhost:8010**，以及關閉HTTPS。*
+請先以 RPC 模式啟動[xeHentai](https://github.com/fffonion/xeHentai)，添加啟動參數`--rpc-port=8010`。
+
+Windows 用戶可以直接運行`RPC模式.bat`。
 
 ## 構建設置
 

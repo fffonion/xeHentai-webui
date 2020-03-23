@@ -1,12 +1,14 @@
 # xeHentai-webui
 
-[简体中文](README.chs.md) [繁體中文](README.cht.md)
+[English](README.md) [繁體中文](README.cht.md)
 
 这是一个 [xeHentai](https://github.com/fffonion/xeHentai) 的web界面
 
-[演示](https://xehentai.yooooo.us/)
+[演示](https://xehentai.yooooo.us/#host=localhost,port=8010,token=,https=no)
 
-*第一次打开演示时，请设置服务器信息. 比如对xeHentai默认设置，输入**localhost:8010**，以及关闭HTTPS。*
+请先以 RPC 模式启动[xeHentai](https://github.com/fffonion/xeHentai)，添加启动参数`--rpc-port=8010`。
+
+Windows 用户可以直接运行`RPC模式.bat`。
 
 ## 构建设置
 
