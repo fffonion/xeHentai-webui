@@ -44,6 +44,7 @@ export default {
   'Scan thread': '掃描線程數',
   'Download thread': '下載線程數',
   'Download timeout': '下載超時',
+  'Low speed threshold': '低速重試閾值',
   'Ignored errors': '忽略錯誤',
   'Add Errno': '添加錯誤號',
   'Log path': '日誌路徑',
@@ -57,5 +58,5 @@ export default {
   'Double Page': '雙頁模式',
   'This WebUI don\'t supports xeHentai earlier than {0}': '這個版本的Web界面可能不兼容{0}以前的xeHentai',
   'To add multiple tasks, input one line per URL': '如需添加多個任務，可以每行填寫一條URL',
-  'Type to search': '搜尋本子'
+  'Type to search': '搜索本子'
 }

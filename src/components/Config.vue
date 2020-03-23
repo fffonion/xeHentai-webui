@@ -39,12 +39,8 @@
             </el-form-item>
             <el-form-item :label="$t('Auto Refresh')">
               <el-row>
-                <el-col :span="12">
-                  <el-input-number v-model="connConfig.refreshInterval" :min="1"></el-input-number>
-                </el-col>
-                <el-col :span="5">
-                  {{ $t('seconds') }}
-                </el-col>
+                <el-input-number v-model="connConfig.refreshInterval" :min="1"></el-input-number>
+                {{ $t('seconds') }}
               </el-row>
             </el-form-item>
           </el-form>
@@ -72,6 +68,10 @@
             <el-form-item :label="$t('Rename')">
               <el-switch v-model="serverConfig.rename_ori"></el-switch>
               <span class='conf-str'>rename_ori</span>
+            </el-form-item>
+            <el-form-item :label="$t('Make archive')">
+              <el-switch v-model="serverConfig.make_archive"></el-switch>
+              <span class='conf-str'>make_archive</span>
             </el-form-item>
           </el-form>
         </el-tab-pane>
@@ -107,10 +107,6 @@
               <el-switch v-model="serverConfig.proxy_image_only"></el-switch>
               <span class='conf-str'>proxy_image_only</span>
             </el-form-item>
-            <el-form-item :label="$t('Make archive')">
-              <el-switch v-model="serverConfig.make_archive"></el-switch>
-              <span class='conf-str'>make_archive</span>
-            </el-form-item>
             <el-form-item :label="$t('Scan thread')">
               <el-input-number v-model="serverConfig.scan_thread_cnt" :min="1"></el-input-number>
               <span class='conf-str'>scan_thread_cnt</span>
@@ -121,12 +117,14 @@
             </el-form-item>
             <el-form-item :label="$t('Download timeout')">
               <el-row>
-                <el-col :span="12">
-                  <el-input-number v-model="serverConfig.download_timeout" :min="1"></el-input-number>
-                </el-col>
-                <el-col :span="12">
+                <el-input-number v-model="serverConfig.download_timeout" :min="1"></el-input-number>
                   {{ $t('seconds') }} <span class='conf-str'>download_timeout</span>
-                </el-col>
+              </el-row>
+            </el-form-item>
+            <el-form-item :label="$t('Low speed threshold')">
+              <el-row>
+                <el-input-number v-model="serverConfig.low_speed_threshold" :min="1"></el-input-number>
+                  {{ $t('KB/s') }} <span class='conf-str'>low_speed_threshold</span>
               </el-row>
             </el-form-item>
             <el-form-item :label="$t('Ignored errors')">

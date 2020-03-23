@@ -44,6 +44,7 @@ export default {
   'Scan thread': '扫描线程数',
   'Download thread': '下载线程数',
   'Download timeout': '下载超时',
+  'Low speed threshold': '低速重试阈值',
   'Ignored errors': '忽略错误',
   'Add Errno': '添加错误号',
   'Log path': '日志路径',
