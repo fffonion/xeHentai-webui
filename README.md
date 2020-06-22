@@ -6,6 +6,8 @@ This is a web interface for [xeHentai](https://github.com/fffonion/xeHentai)
 
 [Demo](https://xehentai.yooooo.us/#host=localhost,port=8010,token=,https=no)
 
+![Screenshot](https://dl.yooooo.us/share/xeHentai/WebUI-%E6%BC%94%E7%A4%BA.gif)
+
 Please start [xeHentai](https://github.com/fffonion/xeHentai) in RPC mode first by adding `--rpc-port=8010`
 to arguments.
 

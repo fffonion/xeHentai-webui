@@ -6,6 +6,8 @@
 
 [演示](https://xehentai.yooooo.us/#host=localhost,port=8010,token=,https=no)
 
+![Screenshot](https://dl.yooooo.us/share/xeHentai/WebUI-%E6%BC%94%E7%A4%BA.gif)
+
 请先以 RPC 模式启动[xeHentai](https://github.com/fffonion/xeHentai)，添加启动参数`--rpc-port=8010`。
 
 Windows 用户可以直接运行`RPC模式.bat`。
