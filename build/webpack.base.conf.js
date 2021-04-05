@@ -3,20 +3,19 @@ const path = require('path')
 const utils = require('./utils')
 const config = require('../config')
 const vueLoaderConfig = require('./vue-loader.conf')
+const eslintPlugin = require('eslint-webpack-plugin');
+
+const { VueLoaderPlugin } = require('vue-loader')
 
 function resolve (dir) {
   return path.join(__dirname, '..', dir)
 }
 
 const createLintingRule = () => ({
-  test: /\.(js|vue)$/,
-  loader: 'eslint-loader',
-  enforce: 'pre',
-  include: [resolve('src'), resolve('test')],
-  options: {
-    formatter: require('eslint-friendly-formatter'),
-    emitWarning: !config.dev.showEslintErrorsInOverlay
-  }
+  extensions: ['js', 'vue'],
+  files: [resolve('src'), resolve('test')],
+  formatter: require('eslint-friendly-formatter'),
+  emitWarning: !config.dev.showEslintErrorsInOverlay
 })
 
 module.exports = {
@@ -36,11 +35,15 @@ module.exports = {
     alias: {
       'vue$': 'vue/dist/vue.esm.js',
       '@': resolve('src'),
+      dgram: false,
+      fs: false,
+      net: false,
+      tls: false,
+      child_process: false
     }
   },
   module: {
     rules: [
-      ...(config.dev.useEslint ? [createLintingRule()] : []),
       {
         test: /\.vue$/,
         loader: 'vue-loader',
@@ -49,7 +52,11 @@ module.exports = {
       {
         test: /\.js$/,
         loader: 'babel-loader',
-        include: [resolve('src'), resolve('test'), resolve('node_modules/webpack-dev-server/client')]
+        include: [resolve('src'), resolve('test'), resolve('node_modules/vue-awesome'), resolve('node_modules/webpack-dev-server/client')],
+        exclude: file => (
+          /node_modules/.test(file) &&
+          !/\.vue\.js/.test(file)
+        )
       },
       {
         test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
@@ -77,16 +84,8 @@ module.exports = {
       }
     ]
   },
-  node: {
-    // prevent webpack from injecting useless setImmediate polyfill because Vue
-    // source contains it (although only uses it if it's native).
-    setImmediate: false,
-    // prevent webpack from injecting mocks to Node native modules
-    // that does not make sense for the client
-    dgram: 'empty',
-    fs: 'empty',
-    net: 'empty',
-    tls: 'empty',
-    child_process: 'empty'
-  }
+  plugins: [
+    new VueLoaderPlugin(),
+    config.dev.useEslint ? new eslintPlugin(createLintingRule()) : null,
+  ]
 }
