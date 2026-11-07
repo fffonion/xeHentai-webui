@@ -51,7 +51,8 @@ var options = {
       },
       ticks: {
         padding: 10,
-        stepSize: 10,
+        // Values are bytes/s, so a fixed step would explode the tick count;
+        // let chart.js space them and cap how many it shows.
         precision: 0,
         autoSkip: true,
         maxTicksLimit: 5,
@@ -77,7 +78,10 @@ export default {
             label: 'Speed',
             backgroundColor: '#EDEBDF',
             borderColor: '#E3E0D1',
-            data: this.data
+            // chart.js defines push/pop/splice wrappers on the array it
+            // receives; handing it Vue's reactive proxy recurses forever, so
+            // pass a plain copy.
+            data: [...(this.data || [])]
           }
         ]
       }

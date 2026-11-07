@@ -1,54 +1,18 @@
-// The Vue build version to load with the `import` command
-// (runtime-only or standalone) has been set in webpack.base.conf with an alias.
-import Vue from 'vue'
-import VueI18n from 'vue-i18n'
-import ElTable from 'element-ui'
-import Icon from 'vue-awesome/components/Icon.vue'
-// import router from './router'
-import store from './store'
-import App from './App'
+import { createApp } from 'vue'
+import { createI18n } from 'vue-i18n'
+import ElementPlus from 'element-plus'
 
-// Imported after the components: element-ui's theme lands last in the CSS
-// bundle, so its defaults keep overriding the early component rules exactly
-// as they did under the webpack build.
-import 'element-ui/lib/theme-chalk/index.css'
+import store from './store/index.js'
+import App from './App.vue'
+import Icon from './components/Icon.vue'
 
-// i18n
+// element-plus ships its theme as a single stylesheet; it is imported before
+// the component styles so the app's overrides still win.
+import 'element-plus/dist/index.css'
+
 import enUs from './assets/i18n/en-us.js'
 import zhHans from './assets/i18n/zh-hans.js'
 import zhHant from './assets/i18n/zh-hant.js'
-
-// FA icons
-import 'vue-awesome/icons/play'
-import 'vue-awesome/icons/pause'
-import 'vue-awesome/icons/stop'
-import 'vue-awesome/icons/trash'
-import 'vue-awesome/icons/download'
-import 'vue-awesome/icons/leanpub'
-import 'vue-awesome/icons/dot-circle-o'
-import 'vue-awesome/icons/check-circle'
-import 'vue-awesome/icons/pause-circle'
-import 'vue-awesome/icons/times-circle'
-import 'vue-awesome/icons/refresh'
-import 'vue-awesome/icons/sliders'
-import 'vue-awesome/icons/plus'
-
-import 'vue-awesome/icons/spinner'
-import 'vue-awesome/icons/hourglass'
-import 'vue-awesome/icons/list-ul'
-import 'vue-awesome/icons/check'
-
-import 'vue-awesome/icons/image'
-
-Vue.use(ElTable)
-
-Vue.use(VueI18n)
-
-Vue.component('icon', Icon)
-
-Vue.config.productionTip = false
-
-Vue.config.performance = true
 
 function getLocale () {
   var lang = navigator.language || navigator.browserLanguage
@@ -56,22 +20,28 @@ function getLocale () {
   if (lang === 'zh-TW' || lang === 'zh-HK') return 'zh-Hant'
   return 'en-US'
 }
+
 const messages = {
   'en-US': enUs,
   'zh-Hans': zhHans,
   'zh-Hant': zhHant
 }
-const i18n = new VueI18n({
+
+const i18n = createI18n({
+  legacy: false,
+  globalInjection: true,
   locale: getLocale(),
-  silentTranslationWarn: true,
+  fallbackLocale: 'en-US',
+  missingWarn: false,
+  fallbackWarn: false,
   messages
 })
 
-new Vue({
-  el: '#app',
-  store,
-  i18n,
-  components: { App },
-  template: '<App/>',
-  render: h => h(App)
-})
+const app = createApp(App)
+
+app.component('icon', Icon)
+app.use(store)
+app.use(i18n)
+app.use(ElementPlus)
+
+app.mount('#app')

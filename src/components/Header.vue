@@ -4,13 +4,28 @@
       <el-row type="flex" justify="space-between" align="middle">
         <el-col :span="14">
           <span class="header">{{ $t('xeHentai WebUI') }}</span>
-          <el-tag type="info" size="mini">
+          <el-tag type="info" size="small">
             {{ info.version !== undefined ? info.version : $t('disconneted')}}
           </el-tag>
-          <el-popover
-            ref="running-stat-popover"
-            width="320"
-            trigger="hover">
+          <el-popover width="320" trigger="hover">
+            <template #reference>
+              <el-tag
+                size="small"
+                :type="info.threads_zombie ? 'warning' : (info.threads_running ? 'success' : 'info')"
+                v-show="info.threads_running !== undefined">
+                <icon
+                :spin="info.threads_running ? true : false"
+                name="spinner"/>
+                {{ info.threads_running }}
+                <icon name="hourglass"/>
+                {{ info.threads_zombie }}
+                &nbsp;&nbsp;
+                <icon name="list-ul"/>
+                {{ info.queue_pending }}
+                <icon name="check"/>
+                {{ info.queue_finished }}
+              </el-tag>
+            </template>
             <el-row class="running-stat-popover">
               <el-col :span="1.5"><icon :spin="info.threads_running ? true : false" name="spinner"/></el-col>
               <el-col :span="8">{{ $t('Running threads') }}:</el-col>
@@ -31,68 +46,48 @@
               <el-col :span="2">{{ info.queue_finished }}</el-col>
             </el-row>
           </el-popover>
-          <el-popover
-            ref="download-speed-popover"
-            width="480"
-            trigger="hover">
+          <el-popover width="480" trigger="hover">
+            <template #reference>
+              <el-tag
+                size="small"
+                :type="speedColor(info.download_speed)"
+                v-show="info.download_speed !== undefined">
+                <icon name="download"/>
+                {{ humanSpeed(info.download_speed) }}
+              </el-tag>
+            </template>
             <speed-chart
-              :data=historySpeed
-              :size=speedChartSize
-              v-bind:height="120">
+              :data="historySpeed"
+              :size="speedChartSize">
             </speed-chart>
           </el-popover>
-          <el-tag
-            size="mini"
-            :type="info.threads_zombie ? 'warning' : (info.threads_running ? 'success' : 'info')"
-            v-show="info.threads_running !== undefined"
-            v-popover:running-stat-popover>
-            <icon
-            :spin="info.threads_running ? true : false"
-            name="spinner"/>
-            {{ info.threads_running }}
-            <icon name="hourglass"/>
-            {{ info.threads_zombie }}
-            &nbsp;&nbsp;
-            <icon name="list-ul"/>
-            {{ info.queue_pending }}
-            <icon name="check"/>
-            {{ info.queue_finished }}
-          </el-tag>
-          <el-tag
-            size="mini"
-            :type="speedColor(info.download_speed)"
-            v-show="info.download_speed !== undefined"
-            v-popover:download-speed-popover>
-            <icon name="download"/>
-            {{ humanSpeed(info.download_speed) }}
-          </el-tag>
         </el-col>
         <!-- <el-button-group>
           <el-button
-            size='mini'
+            size="small"
             round
             @click='handleStart(scope.$index, scope.row)'><icon name="play"></icon></el-button>
           <el-button
-            size='mini'
+            size="small"
             round
             @click='handlePause(scope.$index, scope.row)'><icon name="pause"></icon></el-button>
           <el-button
-            size='mini'
+            size="small"
             round
             @click='handleDelete(scope.$index, scope.row)'><icon name="trash"></icon></el-button>
         </el-button-group> -->
          <el-col :span="4">
           <el-button-group v-show="bulkSelected">
             <el-button
-              size='mini'
+              size="small"
               round
               @click="$emit('update:bulkAction', 'resume')"><icon name="play"></icon></el-button>
             <el-button
-              size='mini'
+              size="small"
               round
               @click="$emit('update:bulkAction', 'pause')"><icon name="pause"></icon></el-button>
             <el-button
-              size='mini'
+              size="small"
               round
               @click="$emit('update:bulkAction', 'del')"><icon name="trash"></icon></el-button>
           </el-button-group>
@@ -100,15 +95,15 @@
         <el-col :span="4">
         <el-button-group>
           <el-button
-            size='mini'
+            size="small"
             round
             @click="$emit('update:addTaskDialogVisible', true)"><icon name="plus"></icon></el-button>
           <el-button
-            size='mini'
+            size="small"
             round
             @click='handleRefresh()'><icon name="refresh"></icon></el-button>
           <el-button
-            size='mini'
+            size="small"
             round
             @click="$emit('update:configDialogVisible', true)"><icon name="sliders"></icon></el-button>
         </el-button-group>

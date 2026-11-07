@@ -36,19 +36,20 @@ await new Promise((resolve) => setTimeout(resolve, options.waitMs))
 const initial = `${options.prefix}-initial.png`
 await page.screenshot({ path: initial })
 
-const dialogOpen = await page.evaluate(() => {
-  const wrapper = document.querySelector('.config-view .el-dialog__wrapper')
-  return Boolean(wrapper && wrapper.style.display !== 'none')
-})
-if (dialogOpen) {
+const overlayVisible = () => {
+  const overlay = document.querySelector('.config-view .el-overlay')
+  return Boolean(overlay && getComputedStyle(overlay).display !== 'none')
+}
+if (await page.evaluate(overlayVisible)) {
   await page.evaluate(() => {
-    const confirm = document.querySelector('.config-view .el-dialog__footer .el-button--primary')
+    const buttons = [...document.querySelectorAll('.config-view .el-dialog__footer button')]
+    const confirm = buttons.find((button) => button.className.includes('el-button--primary')) || buttons[0]
     if (confirm) confirm.click()
   })
   await page.waitForFunction(() => {
-    const wrapper = document.querySelector('.config-view .el-dialog__wrapper')
-    return !wrapper || wrapper.style.display === 'none'
-  }, null, { timeout: 10000 })
+    const overlay = document.querySelector('.config-view .el-overlay')
+    return !overlay || getComputedStyle(overlay).display === 'none'
+  }, null, { timeout: 15000 })
   await new Promise((resolve) => setTimeout(resolve, 600))
 }
 

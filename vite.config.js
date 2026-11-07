@@ -1,16 +1,14 @@
 import { fileURLToPath, URL } from 'node:url'
 import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue2'
+import vue from '@vitejs/plugin-vue'
 
 // The release artifacts live at the web root (`/static/js/...`), matching the
 // long-standing gh-pages layout that the xeHentai binary proxies.
 export default defineConfig({
   base: '/',
   plugins: [vue({
-    // The webpack pipeline this project grew up with kept inter-element
-    // whitespace in templates; Vue 2.7's compiler condenses it by default,
-    // which reflows every inline badge/label. Preserve it to keep the layout
-    // byte-for-byte identical.
+    // Element spacing in this layout depends on the whitespace between inline
+    // tags, so keep the compiler from condensing it.
     template: {
       compilerOptions: {
         whitespace: 'preserve'
@@ -19,11 +17,7 @@ export default defineConfig({
   })],
   resolve: {
     alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url)),
-      // element-ui ships CommonJS and would otherwise pull Vue's CJS runtime,
-      // leaving the bundle with two Vue instances whose component registries
-      // and config never see each other.
-      vue: fileURLToPath(new URL('./node_modules/vue/dist/vue.runtime.esm.js', import.meta.url))
+      '@': fileURLToPath(new URL('./src', import.meta.url))
     },
     dedupe: ['vue'],
     // Single-file components are imported without the extension throughout

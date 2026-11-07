@@ -30,8 +30,10 @@ bun run build
 bun run lint
 ```
 
-構建基於 Vite：模板由 `@vitejs/plugin-vue2` 與 Vue 2.7 編譯，樣式使用 dart-sass。
-產物仍輸出到 `static/`，`gh-pages` 目錄結構與 xeHentai 的 WebUI 代理維持不變。
+構建基於 Vite：模板由 `@vitejs/plugin-vue` 與 Vue 3.5 編譯，樣式使用 dart-sass。
+介面元件庫為 element-plus，狀態管理為 vuex 4，翻譯為 vue-i18n 11。用到的 Font Awesome 4
+圖示已收進 `src/assets/icons`（來自 vue-awesome 2.3.8，MIT 授權），由 `src/components/Icon.vue`
+渲染。產物仍輸出到 `static/`，`gh-pages` 目錄結構與 xeHentai 的 WebUI 代理維持不變。
 
 ## 使用 mock 後端開發
 

@@ -2,44 +2,44 @@
   <div id="app">
     <header-view
       :info="headerInfo"
-      :addTaskDialogVisible.sync="addTaskDialogVisible"
-      :configDialogVisible.sync="configDialogVisible"
+      v-model:addTaskDialogVisible="addTaskDialogVisible"
+      v-model:configDialogVisible="configDialogVisible"
       :bulkSelected="bulkSelected"
-      :bulkAction.sync="bulkAction"
-      :needRefreshHeader.sync="needRefreshHeader"
-      :needRefreshFinished.sync="needRefreshFinished"
-      :needRefreshUnfinished.sync="needRefreshUnfinished"/>
+      v-model:bulkAction="bulkAction"
+      v-model:needRefreshHeader="needRefreshHeader"
+      v-model:needRefreshFinished="needRefreshFinished"
+      v-model:needRefreshUnfinished="needRefreshUnfinished"/>
     <el-main>
       <config-view
-        :connStringNew.sync="connString"
-        :authStringNew.sync="authString"
+        v-model:connStringNew="connString"
+        v-model:authStringNew="authString"
         :serverConfigOriginal="serverConfig"
-        :serverConfigNew.sync="serverConfigLocal"
-        :dialogVisible.sync="configDialogVisible"
-        :needRefreshHeader.sync="needRefreshHeader"
-        :needRefreshFinished.sync="needRefreshFinished"
-        :needRefreshUnfinished.sync="needRefreshUnfinished"/>
+        v-model:serverConfigNew="serverConfigLocal"
+        v-model:dialogVisible="configDialogVisible"
+        v-model:needRefreshHeader="needRefreshHeader"
+        v-model:needRefreshFinished="needRefreshFinished"
+        v-model:needRefreshUnfinished="needRefreshUnfinished"/>
       <add-task-view
         :config="serverConfig"
-        :newTask.sync="newTask"
-        :dialogVisible.sync="addTaskDialogVisible"/>
+        v-model:newTask="newTask"
+        v-model:dialogVisible="addTaskDialogVisible"/>
 
       <download-list-view
         :allTasks="allTasks"
         :rpc="rpcInstance"
-        :needRefreshHeader.sync="needRefreshHeader"
-        :needRefreshFinished.sync="needRefreshFinished"
-        :needRefreshUnfinished.sync="needRefreshUnfinished"
-        :needDeleteGuid.sync="needDeleteGuid"
-        :bulkSelected.sync="bulkSelected"
-        :bulkAction.sync="bulkAction"
-        :galleryVisible.sync="galleryVisible"
-        :galleryGuid.sync="galleryGuid"/>
+        v-model:needRefreshHeader="needRefreshHeader"
+        v-model:needRefreshFinished="needRefreshFinished"
+        v-model:needRefreshUnfinished="needRefreshUnfinished"
+        v-model:needDeleteGuid="needDeleteGuid"
+        v-model:bulkSelected="bulkSelected"
+        v-model:bulkAction="bulkAction"
+        v-model:galleryVisible="galleryVisible"
+        v-model:galleryGuid="galleryGuid"/>
     </el-main>
     <gallery-view
       :rpc="rpcInstance"
-      :guid.sync="galleryGuid"
-      :dialogVisible.sync="galleryVisible"/>
+      v-model:guid="galleryGuid"
+      v-model:dialogVisible="galleryVisible"/>
   </div>
 </template>
 
@@ -108,7 +108,7 @@ export default {
     needDeleteGuid: function (val) {
       if (val && this.allTasksKeys[val] !== undefined) {
         var idx = this.allTasksKeys[val]
-        this.$delete(this.allTasks, idx)
+        this.allTasks.splice(idx, 1)
         delete this.allTasksKeys[val]
         // shrink index by 1
         for (var i = idx; i < this.allTasks.length; i++) {

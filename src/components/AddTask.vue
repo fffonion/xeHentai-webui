@@ -2,7 +2,8 @@
   <div class="add-task-view">
     <el-dialog
       :title="$t('Add Task')"
-      :visible.sync="dialogVisible"
+      :model-value="dialogVisible"
+      @update:model-value="handleCancel"
       :before-close="handleDialogClose"
       top="10vh"
       width="45%">
@@ -86,8 +87,8 @@
                   v-if="addIgnoredErrnoInputVisible"
                   v-model="newIgnoredErrno"
                   ref="addIgnoredErrnoInput"
-                  size="mini"
-                  @keyup.enter.native="addIgnoredErrno"
+                  size="small"
+                  @keyup.enter="addIgnoredErrno"
                   @blur="addIgnoredErrno">
                 </el-input>
                 <el-button v-else class="button-add-ignored-errno" size="small" @click="showAddIgnoredErrnoInput">
@@ -98,10 +99,12 @@
           </el-collapse-item>
         </el-collapse>
       </el-form>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="handleCancel">{{ $t('Cancel') }}</el-button>
-        <el-button type="primary" @click="handleConfirm">{{ $t('Add') }}</el-button>
-      </span>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="handleCancel">{{ $t('Cancel') }}</el-button>
+          <el-button type="primary" @click="handleConfirm">{{ $t('Add') }}</el-button>
+        </span>
+      </template>
     </el-dialog>
   </div>
 </template>
@@ -154,7 +157,7 @@ export default {
     showAddIgnoredErrnoInput () {
       this.addIgnoredErrnoInputVisible = true
       this.$nextTick(_ => {
-        this.$refs.addIgnoredErrnoInput.$refs.input.focus()
+        this.$refs.addIgnoredErrnoInput.focus()
       })
     }
   }

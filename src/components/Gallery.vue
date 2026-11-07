@@ -1,7 +1,8 @@
 <template>
   <div class="gallery-view">
     <el-dialog
-      :visible.sync="dialogVisible"
+      :model-value="dialogVisible"
+      @update:model-value="handleDialogClose"
       :before-close="handleDialogClose"
       top="0"
       v-loading="loading"
@@ -14,7 +15,7 @@
         {{ $t('Double Page') }}
       </el-checkbox>
       <el-pagination
-        :current-page.sync="idx"
+        v-model:current-page="idx"
         layout="prev, pager, next, jumper"
         :page-size="1"
         :total="images.length">
@@ -34,7 +35,7 @@
           @click="handleImgClick"/>
       </div>
       <!-- <el-pagination
-        :current-page.sync="idx"
+        v-model:current-page="idx"
         layout="prev, pager, next, jumper"
         :page-size="1"
         :total="images.length">
@@ -100,7 +101,7 @@ export default {
       }
       this.idx = this.idx + sign * (this.doublePageMode ? 2 : 1)
       // .el-dialog.is-fullscreen
-      e.path[3].scrollTop = 42
+      e.composedPath()[3].scrollTop = 42
     },
     loadFunc (e) {
       this.loading = Math.max(0, this.loading - 1)

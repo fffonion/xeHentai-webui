@@ -91,18 +91,19 @@ await sleep(options.settleMs)
 // would otherwise swallow every synthetic pointer event. `.el-dialog__wrapper`
 // is position:fixed, so `offsetParent` is always null — test `display` instead.
 const configDialogOpen = await page.evaluate(() => {
-  const wrapper = document.querySelector('.config-view .el-dialog__wrapper')
-  return Boolean(wrapper && wrapper.style.display !== 'none')
+  const overlay = document.querySelector('.config-view .el-overlay')
+  return Boolean(overlay && getComputedStyle(overlay).display !== 'none')
 })
 if (configDialogOpen) {
   await page.evaluate(() => {
-    const confirm = document.querySelector('.config-view .el-dialog__footer .el-button--primary')
+    const buttons = [...document.querySelectorAll('.config-view .el-dialog__footer button')]
+    const confirm = buttons.find((button) => button.className.includes('el-button--primary')) || buttons[0]
     if (confirm) confirm.click()
   })
   await page.waitForFunction(() => {
-    const wrapper = document.querySelector('.config-view .el-dialog__wrapper')
-    return !wrapper || wrapper.style.display === 'none'
-  }, null, { timeout: 10000 })
+    const overlay = document.querySelector('.config-view .el-overlay')
+    return !overlay || getComputedStyle(overlay).display === 'none'
+  }, null, { timeout: 15000 })
   await sleep(500)
 }
 

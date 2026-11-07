@@ -1,6 +1,7 @@
 <template>
   <el-table
     ref="downloadlist"
+    table-layout="fixed"
     :data='allTasksFiltered'
     :default-sort="{prop: 'progress', order: 'descending'}"
     @selection-change="handleSelectionChange"
@@ -20,7 +21,7 @@
       :sort-method="handleSortTitle"
       prop='title'
       align='left'>
-      <template slot-scope='scope'>
+      <template #default="scope">
         <el-popover
         trigger='hover'
         placement='right-end'
@@ -52,7 +53,7 @@
                 v-for="tag in scope.row.meta.tags"
                 v-bind:key="tag"
                 :href="getUrlPrefix(scope.row) + '/tag/' + encodeURIComponent(tag)">
-                <el-tag size="mini" type="info" >
+                <el-tag size="small" type="info" >
                   {{ tag }}
                 </el-tag>
               </a>
@@ -60,28 +61,27 @@
               <span> <icon name="image"/> {{ scope.row.meta.total }}p </span>
             </el-col>
           </el-row>
-          <div slot='reference' class='name-wrapper'>
-            <p size='medium' style='overflow:hidden'>{{ scope.row.meta.title }}</p>
+          <template #reference>
+          <div class="name-wrapper">
+            <p style='overflow:hidden'>{{ scope.row.meta.title }}</p>
           </div>
+          </template>
         </el-popover>
       </template>
     </el-table-column>
     <el-table-column
       width=200
       :label="$t('Progress')"
-      :filters="[{'text': $t('Finished'), 'value': 'success'},
-                {'text': $t('Running'), 'value': 'running'},
-                {'text': $t('Paused'), 'value': 'paused'},
-                {'text': $t('Failed'), 'value': 'exception'}
-      ]"
+      :filters="progressFilters"
       :filter-method="filterProgress"
       filter-placement="bottom-start"
       sortable
       :sort-method="handleSortProgress"
       prop='progress'
       align=left>
-      <template slot-scope='scope'>
+      <template #default="scope">
         <el-progress
+          :class="'is-' + mapStatus(scope.row.state)"
           :percentage='100 * scope.row.meta.finished / scope.row.meta.total || 0'
           :status='mapStatus(scope.row.state)'
           :show-text='true'>
@@ -91,7 +91,7 @@
     <el-table-column
       width=30
       align=left>
-      <template slot-scope='scope'>
+      <template #default="scope">
         <span class='progress-indicator' v-if='isTaskStatusRunning(scope.row.state)'>
           <icon name='dot-circle-o' :class='mapStatus(scope.row.state)'></icon>
         </span>
@@ -111,7 +111,7 @@
     </el-table-column>
     <el-table-column
       align=left>
-      <template slot='header'>
+      <template #header>
         <el-autocomplete
           class="searchbox"
           v-model="searchKeywords"
@@ -120,31 +120,31 @@
           :trigger-on-focus="false"
           :placeholder="$t('Type to search')"/>
       </template>
-      <template slot-scope='scope'>
+      <template #default="scope">
         <el-button-group>
           <el-button
-            size='mini'
+            size="small"
             v-if='!isTaskStatusFinished(scope.row.state)'
             :disabled='isTaskStatusRunning(scope.row.state) || isTaskStatusFailed(scope.row.state)'
             @click='handleStart(scope.$index, scope.row)'><icon name='play'></icon></el-button>
           <el-button
-            size='mini'
+            size="small"
             v-if='!isTaskStatusFinished(scope.row.state)'
             :disabled='!isTaskStatusRunning(scope.row.state)'
             @click='handlePause(scope.$index, scope.row)'><icon name='pause'></icon></el-button>
           <el-button
-            size='mini'
+            size="small"
             v-if='isTaskStatusFinished(scope.row.state)'
             @click='handleView(scope.$index, scope.row)'><icon name='leanpub'></icon></el-button>
           <a :href="getArchive(scope.row.guid, scope.row.meta.title)"
             :download="scope.row.meta.title + '.zip'">
             <el-button
-              size='mini'
+              size="small"
               v-if='isTaskStatusFinished(scope.row.state)'
               @click='handleDownload(scope.$index, scope.row)'><icon name='download'></icon></el-button>
           </a>
           <el-button
-            size='mini'
+            size="small"
             @click='handleDelete(scope.$index, scope.row)'><icon name='trash'></icon></el-button>
         </el-button-group>
       </template>
@@ -189,6 +189,16 @@ export default {
     /** tableData () {
       return this.unfinishedTasks.concat(this.finishedTasks)
     },**/
+    // Kept out of the template: a fresh array literal on every render makes
+    // element-plus rebuild the filter panel on each pass, which loops.
+    progressFilters () {
+      return [
+        { text: this.$t('Finished'), value: 'success' },
+        { text: this.$t('Running'), value: 'running' },
+        { text: this.$t('Paused'), value: 'paused' },
+        { text: this.$t('Failed'), value: 'exception' }
+      ]
+    },
     allTags () {
       var tags = []
       var unique = {}

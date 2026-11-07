@@ -2,7 +2,8 @@
   <div class="config-view">
     <el-dialog
       :title="$t('Configuration')"
-      :visible.sync="dialogVisible"
+      :model-value="dialogVisible"
+      @update:model-value="handleCancel"
       :before-close="handleDialogClose"
       top="10vh"
       width="45%">
@@ -15,7 +16,7 @@
                   <el-input v-model="connConfig.host" :placeholder="$t('Host')"
                     class="is-https"
                     :class="{ https : connConfig.isHttps }">
-                    <template slot="prepend">
+                    <template #prepend>
                       {{ connConfig.isHttps ? 'https://' : 'http://' }}
                     </template>
                   </el-input>
@@ -30,7 +31,6 @@
             </el-form-item>
             <el-form-item label="HTTPS">
               <el-switch v-model="connConfig.isHttps"
-              label="right"
               active-color="#13ce66"
               inactive-color="#c0ccda"></el-switch>
             </el-form-item>
@@ -90,8 +90,8 @@
                   v-if="addProxyInputVisible"
                   v-model="newProxy"
                   ref="addProxyInput"
-                  size="mini"
-                  @keyup.enter.native="addProxy"
+                  size="small"
+                  @keyup.enter="addProxy"
                   @blur="addProxy">
                 </el-input>
                 <el-button v-else class="button-add-proxy" size="small" @click="showAddProxyInput">
@@ -140,8 +140,8 @@
                   v-if="addIgnoredErrnoInputVisible"
                   v-model="newIgnoredErrno"
                   ref="addIgnoredErrnoInput"
-                  size="mini"
-                  @keyup.enter.native="addIgnoredErrno"
+                  size="small"
+                  @keyup.enter="addIgnoredErrno"
                   @blur="addIgnoredErrno">
                 </el-input>
                 <el-button v-else class="button-add-ignored-errno" size="small" @click="showAddIgnoredErrnoInput">
@@ -181,10 +181,12 @@
           </el-form>
         </el-tab-pane>
       </el-tabs>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="handleCancel">{{ $t('Cancel') }}</el-button>
-        <el-button type="primary" @click="handleConfirm">{{ $t('Confirm') }}</el-button>
-      </span>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="handleCancel">{{ $t('Cancel') }}</el-button>
+          <el-button type="primary" @click="handleConfirm">{{ $t('Confirm') }}</el-button>
+        </span>
+      </template>
     </el-dialog>
   </div>
 </template>
@@ -289,7 +291,7 @@ export default {
     showAddProxyInput () {
       this.addProxyInputVisible = true
       this.$nextTick(_ => {
-        this.$refs.addProxyInput.$refs.input.focus()
+        this.$refs.addProxyInput.focus()
       })
     },
     removeIgnoredErrno (errno) {
@@ -308,7 +310,7 @@ export default {
     showAddIgnoredErrnoInput () {
       this.addIgnoredErrnoInputVisible = true
       this.$nextTick(_ => {
-        this.$refs.addIgnoredErrnoInput.$refs.input.focus()
+        this.$refs.addIgnoredErrnoInput.focus()
       })
     }
   }

@@ -29,9 +29,13 @@ bun run build
 bun run lint
 ```
 
-The build is Vite based: templates are compiled with `@vitejs/plugin-vue2`
-and Vue 2.7, styles with dart-sass. Assets still land under `static/`, so the
-published `gh-pages` layout and the xeHentai binary's WebUI proxy keep working.
+The build is Vite based: templates are compiled with `@vitejs/plugin-vue` for
+Vue 3.5, styles with dart-sass. The UI runs on element-plus, store on vuex 4 and
+translations on vue-i18n 11. The Font Awesome 4 glyphs the interface uses are
+vendored in `src/assets/icons` (vue-awesome 2.3.8 data, MIT) and rendered by
+`src/components/Icon.vue`, so no Vue 2 icon component is needed. Assets still
+land under `static/`, so the published `gh-pages` layout and the xeHentai
+binary's WebUI proxy keep working.
 
 ## Development against a mock backend
 
@@ -51,7 +55,9 @@ xdg-open 'http://localhost:8040/#host=localhost,port=8040,https=no,token=mock'
 
 `tools/probe.mjs` measures mount time, DOM weight, long tasks while the polling
 refresher runs, scroll frame pacing and search-typing latency against that
-backend; `tools/screenshot.mjs` captures the same surfaces for visual diffs.
+backend; `tools/screenshot.mjs` captures the same surfaces for visual diffs;
+`tools/smoke.mjs` drives the actual workflows (connection dialog, search, sort,
+bulk actions, config tabs, add task, gallery viewer) and asserts on the result.
 
 ``` bash
 bun run probe --port 8040 --out report.json
