@@ -97,3 +97,14 @@ main button .fa-icon {
     box-sizing: border-box;
   }
 }
+
+/* The action buttons are plain elements (a component per button was too
+   costly to patch on every table update). The template keeps whitespace
+   between them, which shows up as gaps inside the inline-block group, so
+   collapse it on the container and restore it on the buttons. */
+.row-actions {
+  font-size: 0;
+}
+.row-actions .el-button {
+  font-size: 12px;
+}

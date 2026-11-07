@@ -22,51 +22,11 @@
       prop='title'
       align='left'>
       <template #default="scope">
-        <el-popover
-        trigger='hover'
-        placement='right-end'
-        width='500'
-        @hide="() => handlePopoverHide(scope.row)">
-          <div class="titles">
-            <div class='main-title'>{{ scope.row.meta.title }}</div>
-            <div class='sub-title' v-if="scope.row.meta.title !== scope.row.meta.gnname &&scope.row.meta.gnname">
-              {{ scope.row.meta.gnname }}
-            </div>
-            <div class='sub-title' v-if="scope.row.meta.title !== scope.row.meta.gjname &&scope.row.meta.gjname">
-              {{ scope.row.meta.gjname }}
-            </div>
-          </div>
-          <el-row>
-            <el-col :span="6">
-              <a :href="scope.row.url" target="_blank">
-                <img
-                  v-if="isTaskStatusViewable(scope.row.state)"
-                  width="100px"
-                  @error="handleThumbFailed"
-                  @load="handleThumbLoaded"
-                  :data-thumb-id="scope.row.guid"
-                  :src="getImage(scope.row, 1) + '?w=300&_=' + (thumbNeedReload[scope.row.guid] || 0)"/>
-              </a>
-            </el-col>
-            <el-col :span="18">
-              <a target="_blank"
-                v-for="tag in scope.row.meta.tags"
-                v-bind:key="tag"
-                :href="getUrlPrefix(scope.row) + '/tag/' + encodeURIComponent(tag)">
-                <el-tag size="small" type="info" >
-                  {{ tag }}
-                </el-tag>
-              </a>
-              <div style="padding-top:1em"></div>
-              <span> <icon name="image"/> {{ scope.row.meta.total }}p </span>
-            </el-col>
-          </el-row>
-          <template #reference>
-          <div class="name-wrapper">
-            <p style='overflow:hidden'>{{ scope.row.meta.title }}</p>
-          </div>
-          </template>
-        </el-popover>
+        <div class="name-wrapper"
+          @mouseenter="handleTitleEnter(scope.row, $event)"
+          @mouseleave="schedulePopoverClose">
+          <p style='overflow:hidden'>{{ scope.row.meta.title }}</p>
+        </div>
       </template>
     </el-table-column>
     <el-table-column
@@ -121,38 +81,92 @@
           :placeholder="$t('Type to search')"/>
       </template>
       <template #default="scope">
-        <el-button-group>
-          <el-button
-            size="small"
+        <!-- Plain elements carrying the element-plus classes: a component
+             per button costs more to patch than the whole cell it lives in,
+             and these rows are re-rendered on every poll and keystroke. -->
+        <div class="el-button-group el-button-group--horizontal row-actions">
+          <button type="button"
+            class="el-button el-button--small"
+            :class="{ 'is-disabled': isTaskStatusRunning(scope.row.state) || isTaskStatusFailed(scope.row.state) }"
+            :disabled="isTaskStatusRunning(scope.row.state) || isTaskStatusFailed(scope.row.state)"
             v-if='!isTaskStatusFinished(scope.row.state)'
-            :disabled='isTaskStatusRunning(scope.row.state) || isTaskStatusFailed(scope.row.state)'
-            @click='handleStart(scope.$index, scope.row)'><icon name='play'></icon></el-button>
-          <el-button
-            size="small"
+            @click='handleStart(scope.$index, scope.row)'><icon name='play'></icon></button>
+          <button type="button"
+            class="el-button el-button--small"
+            :class="{ 'is-disabled': !isTaskStatusRunning(scope.row.state) }"
+            :disabled="!isTaskStatusRunning(scope.row.state)"
             v-if='!isTaskStatusFinished(scope.row.state)'
-            :disabled='!isTaskStatusRunning(scope.row.state)'
-            @click='handlePause(scope.$index, scope.row)'><icon name='pause'></icon></el-button>
-          <el-button
-            size="small"
+            @click='handlePause(scope.$index, scope.row)'><icon name='pause'></icon></button>
+          <button type="button"
+            class="el-button el-button--small"
             v-if='isTaskStatusFinished(scope.row.state)'
-            @click='handleView(scope.$index, scope.row)'><icon name='leanpub'></icon></el-button>
+            @click='handleView(scope.$index, scope.row)'><icon name='leanpub'></icon></button>
           <a :href="getArchive(scope.row.guid, scope.row.meta.title)"
             :download="scope.row.meta.title + '.zip'">
-            <el-button
-              size="small"
+            <button type="button"
+              class="el-button el-button--small"
               v-if='isTaskStatusFinished(scope.row.state)'
-              @click='handleDownload(scope.$index, scope.row)'><icon name='download'></icon></el-button>
+              @click='handleDownload(scope.$index, scope.row)'><icon name='download'></icon></button>
           </a>
-          <el-button
-            size="small"
-            @click='handleDelete(scope.$index, scope.row)'><icon name='trash'></icon></el-button>
-        </el-button-group>
+          <button type="button"
+            class="el-button el-button--small"
+            @click='handleDelete(scope.$index, scope.row)'><icon name='trash'></icon></button>
+        </div>
       </template>
     </el-table-column>
   </el-table>
+  <!-- One popover for the whole table, anchored to the hovered title cell.
+       A popover per row made every table update re-measure 300 poppers. -->
+  <el-popover
+    v-model:visible="popoverVisible"
+    :virtual-ref="popoverAnchor"
+    virtual-triggering
+    placement="right-end"
+    width="500"
+    @hide="handlePopoverHide">
+    <div v-if="popoverRow"
+      @mouseenter="cancelPopoverClose"
+      @mouseleave="schedulePopoverClose">
+      <div class="titles">
+        <div class='main-title'>{{ popoverRow.meta.title }}</div>
+        <div class='sub-title' v-if="popoverRow.meta.title !== popoverRow.meta.gnname && popoverRow.meta.gnname">
+          {{ popoverRow.meta.gnname }}
+        </div>
+        <div class='sub-title' v-if="popoverRow.meta.title !== popoverRow.meta.gjname && popoverRow.meta.gjname">
+          {{ popoverRow.meta.gjname }}
+        </div>
+      </div>
+      <el-row>
+        <el-col :span="6">
+          <a :href="popoverRow.url" target="_blank">
+            <img
+              v-if="isTaskStatusViewable(popoverRow.state)"
+              width="100px"
+              @error="handleThumbFailed"
+              @load="handleThumbLoaded"
+              :data-thumb-id="popoverRow.guid"
+              :src="getImage(popoverRow, 1) + '?w=300&_=' + (thumbNeedReload[popoverRow.guid] || 0)"/>
+          </a>
+        </el-col>
+        <el-col :span="18">
+          <a target="_blank"
+            v-for="tag in popoverRow.meta.tags"
+            v-bind:key="tag"
+            :href="getUrlPrefix(popoverRow) + '/tag/' + encodeURIComponent(tag)">
+            <el-tag size="small" type="info" >
+              {{ tag }}
+            </el-tag>
+          </a>
+          <div style="padding-top:1em"></div>
+          <span> <icon name="image"/> {{ popoverRow.meta.total }}p </span>
+        </el-col>
+      </el-row>
+    </div>
+  </el-popover>
 </template>
 
 <script>
+import { markRaw } from 'vue'
 import {mapGetters} from 'vuex'
 import '../assets/css/download-list.scss'
 
@@ -175,6 +189,10 @@ export default {
       // },
       // expanded_rows: [],
       thumbNeedReload: {},
+      popoverRow: null,
+      popoverAnchor: null,
+      popoverVisible: false,
+      popoverCloseTimer: null,
       selectedRows: [],
       searchKeywords: ''
     }
@@ -300,13 +318,38 @@ export default {
       var id = e.srcElement.getAttribute('data-thumb-id')
       delete this.thumbNeedReload[id]
     },
-    handlePopoverHide (row) {
+    handleTitleEnter (row, event) {
+      this.cancelPopoverClose()
+      this.popoverRow = row
+      // A DOM element stored in reactive state would be proxied, and the
+      // popper looks its anchor up by identity.
+      this.popoverAnchor = markRaw(event.currentTarget)
+      this.popoverVisible = true
+    },
+    schedulePopoverClose () {
+      var _this = this
+      this.cancelPopoverClose()
+      this.popoverCloseTimer = setTimeout(() => {
+        _this.popoverVisible = false
+      }, 150)
+    },
+    cancelPopoverClose () {
+      if (this.popoverCloseTimer) {
+        clearTimeout(this.popoverCloseTimer)
+        this.popoverCloseTimer = null
+      }
+    },
+    handlePopoverHide () {
+      this.cancelPopoverClose()
+      var row = this.popoverRow
+      if (!row) return
       var id = row.guid
       if (this.thumbNeedReload[id]) {
         // Bumping the counter rewrites the thumbnail URL so Vue re-requests
         // it; mutating the row title here would invalidate the whole table.
         this.thumbNeedReload[id] += 1
       }
+      this.popoverRow = null
     },
     handleSelectionChange (selection) {
       this.selectedRows = []
