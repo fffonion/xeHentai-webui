@@ -54,7 +54,6 @@ main button .fa-icon {
   }
 
   .sub-title {
-    *font-style: italic;
     color: #909399;
   }
 
@@ -80,4 +79,21 @@ main button .fa-icon {
 
 .el-autocomplete.searchbox {
   width: 100%;
+  // element-ui 2.15 stopped wrapping the small input in a 40px line box, which
+  // shrank the header row by 27px. Pin the metrics element-ui 2.12 produced so
+  // the header keeps its established height and the input keeps its position.
+  height: 55px;
+  margin-bottom: 7px;
+  line-height: 40px;
+  // element-ui 2.12 inset the search box by 10px on each side; 2.15 dropped
+  // that padding, which widened the input and its suggestion popper by 20px.
+  padding: 0 10px;
+  box-sizing: border-box;
+
+  .el-input {
+    line-height: 40px;
+    vertical-align: top;
+    padding: 0 10px;
+    box-sizing: border-box;
+  }
 }

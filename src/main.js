@@ -3,11 +3,14 @@
 import Vue from 'vue'
 import VueI18n from 'vue-i18n'
 import ElTable from 'element-ui'
-import Icon from 'vue-awesome/components/Icon'
+import Icon from 'vue-awesome/components/Icon.vue'
 // import router from './router'
 import store from './store'
 import App from './App'
 
+// Imported after the components: element-ui's theme lands last in the CSS
+// bundle, so its defaults keep overriding the early component rules exactly
+// as they did under the webpack build.
 import 'element-ui/lib/theme-chalk/index.css'
 
 // i18n
@@ -64,7 +67,6 @@ const i18n = new VueI18n({
   messages
 })
 
-/* eslint-disable no-new */
 new Vue({
   el: '#app',
   store,

@@ -98,7 +98,7 @@ export default {
     needRefreshUnfinished: function (val, old) {
       if (val - old < RPC_THRESHOLD) return
       var _this = this
-      this.listTasks('!finished', (r) => { _this.updateTasks(r, true) })
+      this.listTasks('!finished', (r) => { _this.updateTasks(r) })
     },
     needRefreshHeader: function (val, old) {
       if (val - old < RPC_THRESHOLD) return
@@ -218,27 +218,34 @@ export default {
       this.refreshUnfinishedFunc()
       this.getConfig()
     },
-    updateTasks (tasks, forceReplace) {
-      // updateTasks update value in tasks in place
-      // it doesn't handle removal
-      // console.log('enter')
+    updateTasks (tasks) {
+      // Merge each refreshed task into the row object already in the table
+      // instead of replacing it. Replacing the object makes element-ui rebuild
+      // every row and its cells; patching fields only repaints what changed.
       for (let task of tasks) {
-        // console.log(this.allTasksKeys[task.guid], task.guid)
-        if (this.allTasksKeys[task.guid] !== undefined) {
-          var idx = this.allTasksKeys[task.guid]
-          // we should check if the task state has changed
-          if (!forceReplace && this.allTasks[idx].state === task.state) continue
-          // if (idx === -1) continue
-          // console.log('update exists', task.guid, this.allTasks[idx] === task)
-          // this.allTasks.pop(idx)
-          this.$set(this.allTasks, idx, task)
-        } else {
-          // console.log('push')
+        var idx = this.allTasksKeys[task.guid]
+        if (idx === undefined) {
           this.allTasks.push(task)
           this.allTasksKeys[task.guid] = this.allTasks.length - 1
+          continue
         }
+        var row = this.allTasks[idx]
+        if (row.state !== task.state) row.state = task.state
+        if (row.failcode !== task.failcode) row.failcode = task.failcode
+        if (row.url !== task.url) row.url = task.url
+        this.mergeMeta(row.meta, task.meta)
       }
-      // console.log('exit')
+    },
+    mergeMeta (target, source) {
+      if (!source) return
+      for (let key of ['title', 'gnname', 'gjname', 'total', 'finished']) {
+        if (target[key] !== source[key]) target[key] = source[key]
+      }
+      // Tags only feed the detail popover; swap the array when it really
+      // changed so rows do not re-render on every poll.
+      if (source.tags && target.tags.join('#') !== source.tags.join('#')) {
+        target.tags = source.tags.slice()
+      }
     }
   },
   mounted () {
@@ -270,15 +277,13 @@ body {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  *text-align: center;
   color: #2c3e50;
 }
 #app {
   margin-top: 60px;
 }
-.el-popover {
-  font-size: 0.8em;
-}
+/* element-ui's theme already sets the popover font size; leaving it in place
+   keeps the 14px base the pre-Vite build rendered. */
 .el-popover hr {
   border: 0.05em solid #cccccc;
 }

@@ -293,9 +293,8 @@ export default {
     handlePopoverHide (row) {
       var id = row.guid
       if (this.thumbNeedReload[id]) {
-        // let's just make something change if thumb has failed
-        // so vue can request it again next time
-        row.meta.title += ' '
+        // Bumping the counter rewrites the thumbnail URL so Vue re-requests
+        // it; mutating the row title here would invalidate the whole table.
         this.thumbNeedReload[id] += 1
       }
     },

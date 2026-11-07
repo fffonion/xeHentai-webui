@@ -1,15 +1,23 @@
 <script>
 import util from '@/assets/js/util.js'
 import { Line } from 'vue-chartjs'
+import {
+  Chart,
+  LineController,
+  LineElement,
+  PointElement,
+  LinearScale,
+  CategoryScale,
+  Filler,
+  Legend,
+  Tooltip
+} from 'chart.js'
+
+Chart.register(LineController, LineElement, PointElement, LinearScale, CategoryScale, Filler, Legend, Tooltip)
 
 var options = {
-  legend: {
-    display: false
-  },
-  animation: {
-    duration: 0
-  },
-  // events: ['click'],
+  responsive: true,
+  animation: false,
   elements: {
     point: {
       radius: 0,
@@ -17,49 +25,62 @@ var options = {
       hoverRadius: 4
     }
   },
-  tooltips: {
-    enabled: false
+  plugins: {
+    legend: {
+      display: false
+    },
+    tooltip: {
+      enabled: false
+    }
   },
   scales: {
-    xAxes: [{
-      gridLines: {
-        display: false,
+    x: {
+      display: false
+    },
+    y: {
+      type: 'linear',
+      beginAtZero: true,
+      border: {
+        display: false
+      },
+      grid: {
         drawTicks: false,
-        drawBorder: false
+        color: (context) => (context.tick && context.tick.value === 0
+          ? 'rgba(0, 0, 0, 0.1)'
+          : 'rgba(0, 0, 0, 0.05)')
       },
       ticks: {
-        display: false
-      }
-    }],
-    yAxes: [{
-      type: 'linear',
-      ticks: {
         padding: 10,
-        minStepSize: 10,
+        stepSize: 10,
         precision: 0,
         autoSkip: true,
         maxTicksLimit: 5,
-        beginAtZero: true,
-        callback: function (value, index, values) {
+        callback: function (value) {
           return util.humanSpeed(value, 1)
         }
-      },
-      gridLines: {
-        zeroLineColor: 'rgba(0, 0, 0, 0.1)',
-        zeroLineWidth: 1,
-        drawBorder: false,
-        display: true,
-        drawTicks: false
       }
-    }]
+    }
   }
 }
+
 export default {
-  extends: Line,
+  components: {
+    LineChart: Line
+  },
   props: ['data', 'size'],
   computed: {
     chartData: function () {
-      return this.data
+      return {
+        labels: this.chartLabels,
+        datasets: [
+          {
+            label: 'Speed',
+            backgroundColor: '#EDEBDF',
+            borderColor: '#E3E0D1',
+            data: this.data
+          }
+        ]
+      }
     },
     chartLabels: function () {
       var labels = []
@@ -67,28 +88,17 @@ export default {
         labels.push(Date.now() - i)
       }
       return labels
+    },
+    chartOptions: function () {
+      return options
     }
-  },
-  watch: {
-    chartData () {
-      this.$data._chart.update()
-    }
-  },
-  mounted () {
-    this.renderChart({
-      labels: this.chartLabels,
-      datasets: [
-        {
-          label: 'Speed',
-          backgroundColor: '#EDEBDF',
-          borderColor: '#E3E0D1',
-          data: this.chartData
-        }
-      ]
-    }, options)
   }
 }
 </script>
+
+<template>
+  <line-chart :data="chartData" :options="chartOptions"/>
+</template>
 
 <style>
 </style>
