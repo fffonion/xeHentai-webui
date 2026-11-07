@@ -14,19 +14,42 @@ Windows 用户可以直接运行`RPC模式.bat`。
 
 ## 构建设置
 
+需要 [Bun](https://bun.sh) 1.2 或更新版本，锁文件为 `bun.lock`。
+
 ``` bash
 # 安装依赖
-npm install
+bun install
 
 # 热更新开发模式 localhost:8080
-npm run dev
+bun run dev
 
-# 构建生产版本
-npm run build
+# 构建生产版本到 dist/
+bun run build
 
-# 构建生产版本并显示bundle分析报告
-npm run build --report
+# 检查 Vue 源码以及 mock/probe 脚本
+bun run lint
 ```
+
+构建基于 Vite：模板由 `@vitejs/plugin-vue2` 与 Vue 2.7 编译，样式使用 dart-sass。
+产物仍输出到 `static/`，`gh-pages` 目录结构与 xeHentai 的 WebUI 代理保持不变。
+
+## 使用 mock 后端开发
+
+`mock/` 提供一个无依赖的 xeHentai RPC 服务替身，可以在没有真实实例、任务数量很多时调试界面：
+
+``` bash
+# 300 个任务，进度计数每秒推进一次
+bun run mock --tasks 300 --port 8040 --static dist
+
+# 冻结计数，便于重复截图对比
+bun run mock --tasks 300 --port 8040 --static dist --churn-ms 0
+
+# 通过 URL hash 固定连接参数后打开
+xdg-open 'http://localhost:8040/#host=localhost,port=8040,https=no,token=mock'
+```
+
+`tools/probe.mjs` 会测量首屏时间、DOM 规模、轮询刷新期间的长任务、滚动帧率与搜索输入延迟；
+`tools/screenshot.mjs` 采集同样的界面用于视觉比对。
 
 ## 投票新功能
 

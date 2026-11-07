@@ -13,21 +13,54 @@ to arguments.
 
 ## Build Setup
 
+Requires [Bun](https://bun.sh) 1.2 or newer (the lockfile is `bun.lock`).
+
 ``` bash
 # install dependencies
-npm install
+bun install
 
 # serve with hot reload at localhost:8080
-npm run dev
+bun run dev
 
-# build for production with minification
-npm run build
+# build for production into dist/
+bun run build
 
-# build for production and view the bundle analyzer report
-npm run build --report
+# lint the Vue sources and the mock/probe tooling
+bun run lint
 ```
 
-For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
+The build is Vite based: templates are compiled with `@vitejs/plugin-vue2`
+and Vue 2.7, styles with dart-sass. Assets still land under `static/`, so the
+published `gh-pages` layout and the xeHentai binary's WebUI proxy keep working.
+
+## Development against a mock backend
+
+`mock/` contains a dependency-free stand-in for the xeHentai RPC server, so the
+UI can be exercised without a real instance (and with hundreds of tasks):
+
+``` bash
+# 300 tasks, advancing the progress counters once per second
+bun run mock --tasks 300 --port 8040 --static dist
+
+# freeze the counters (screenshots stay reproducible)
+bun run mock --tasks 300 --port 8040 --static dist --churn-ms 0
+
+# open it with the connection pinned through the URL hash
+xdg-open 'http://localhost:8040/#host=localhost,port=8040,https=no,token=mock'
+```
+
+`tools/probe.mjs` measures mount time, DOM weight, long tasks while the polling
+refresher runs, scroll frame pacing and search-typing latency against that
+backend; `tools/screenshot.mjs` captures the same surfaces for visual diffs.
+
+``` bash
+bun run probe --port 8040 --out report.json
+node tools/screenshot.mjs --port 8040 --prefix /tmp/shot
+```
+
+Playwright's browser is not downloaded by `bun install`; run
+`bunx playwright install chromium` once, or point `PLAYWRIGHT_BROWSERS_PATH` at
+an existing browser cache.
 
 ## Request a feature
 
