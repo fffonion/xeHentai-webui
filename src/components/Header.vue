@@ -93,7 +93,7 @@
           </el-button-group>
         </el-col>
         <el-col :span="4">
-        <el-button-group>
+        <el-button-group class="header-actions">
           <el-button
             size="small"
             round

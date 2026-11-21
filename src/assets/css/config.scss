@@ -1,8 +1,96 @@
 .config-view {
+  --config-control-height: 40px;
   padding: 0 15px;
+
+  .el-dialog {
+    --el-dialog-padding-primary: 0px;
+    --el-dialog-border-radius: 2px;
+    --el-dialog-box-shadow: 0 1px 3px rgba(0, 0, 0, .3);
+  }
+
+  .el-dialog__header,
+  .el-dialog__header.show-close {
+    padding: 20px 20px 10px;
+  }
+
+  .el-dialog__title {
+    line-height: 24px;
+  }
+
+  .el-dialog__headerbtn {
+    top: 20px;
+    right: 20px;
+    width: 14px;
+    height: 14px;
+  }
+
+  .el-dialog__body {
+    padding: 30px 20px;
+  }
+
+  .el-dialog__footer {
+    padding: 10px 20px 20px;
+
+    .el-button {
+      height: var(--config-control-height);
+      padding: 12px 20px;
+    }
+
+    .el-button + .el-button {
+      margin-left: 10px;
+    }
+  }
 
   .el-tabs__content {
     padding-top: 15px;
+  }
+
+  .el-form-item {
+    --el-form-item-margin-bottom: 22px;
+  }
+
+  .el-form-item__label,
+  .el-form-item__content {
+    // Rows and inline units should use the full space after the label.
+    display: block;
+    line-height: var(--config-control-height);
+  }
+
+  .el-form-item__label {
+    height: auto;
+    word-break: break-all;
+  }
+
+  .el-form-item__content .el-row:not(:has(> .el-col)) {
+    display: block;
+  }
+
+  .el-form-item__content .el-col {
+    min-width: 0;
+  }
+
+  .el-input,
+  .el-input-number {
+    --el-input-height: var(--config-control-height);
+    vertical-align: top;
+  }
+
+  .el-input-number {
+    width: 180px;
+    line-height: calc(var(--config-control-height) - 2px);
+  }
+
+  .el-input-number__decrease,
+  .el-input-number__increase {
+    width: var(--config-control-height);
+  }
+
+  .el-input__wrapper {
+    padding-inline: 16px;
+  }
+
+  .el-slider {
+    height: 38px;
   }
 
   .is-https .el-input-group__prepend {
@@ -23,13 +111,12 @@
     font-style: italic;
     margin-left: 10px;
     color: #dcdfe6;
+    white-space: nowrap;
   }
 
   .input-add-proxy,
   .input-add-ignored-errno {
     width: 120px;
-    height: 24px;
-    vertical-align: top;
   }
 
   .el-tag+.el-tag {
@@ -39,8 +126,7 @@
   .button-add-proxy,
   .button-add-ignored-errno {
     height: 24px;
-    padding-top: 0;
-    padding-bottom: 0;
+    padding: 0 15px;
   }
 
   .button-add-proxy span,

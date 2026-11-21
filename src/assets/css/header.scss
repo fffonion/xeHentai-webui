@@ -11,6 +11,11 @@
   .el-tag {
     font-size: 0.7em;
   }
+
+  .header-actions .el-button--small.is-round {
+    height: 36px;
+    padding: 7px 15px;
+  }
 }
 
 header {
